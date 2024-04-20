@@ -1,0 +1,20 @@
+﻿@page
+@model DistributorsModel
+
+<h2>Lista Dystrybutorów</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var distributor in Model.Distributors)
+        {
+            <tr>
+                <td><a asp-page="/DistributorDetails" asp-route-DistributorName="@distributor.Name">@distributor.Name</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

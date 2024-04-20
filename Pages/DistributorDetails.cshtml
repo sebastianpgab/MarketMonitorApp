@@ -1,0 +1,21 @@
+﻿@page "/distributor/{DistributorName}"
+@model DistributorDetailsModel
+
+<h1>Wybierz opcje dla @Model.DistributorName</h1>
+<form method="post" class="form-group">
+    <input type="hidden" name="DistributorName" value="@Model.DistributorName" />
+    @if (Model.Categories != null)
+    {
+        foreach (var category in Model.Categories)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="SelectedOptions" value="@category.LinkToCategory" id="category-@category.Id">
+                <label class="form-check-label" for="category-@category.Id">
+                    @category.Name
+                </label>
+            </div>
+        }
+    }
+
+    <button type="submit" class="btn btn-primary mt-3">Pobierz zmiany cen</button>
+</form>

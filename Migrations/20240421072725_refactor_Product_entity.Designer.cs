@@ -4,6 +4,7 @@ using MarketMonitorApp.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketMonitorApp.Migrations
 {
     [DbContext(typeof(MarketMonitorDbContext))]
-    partial class MarketMonitorDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240421072725_refactor_Product_entity")]
+    partial class refactor_Product_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +38,7 @@ namespace MarketMonitorApp.Migrations
                     b.Property<bool>("IsEntered")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LastActualization")
+                    b.Property<DateTime>("LasActualisation")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");

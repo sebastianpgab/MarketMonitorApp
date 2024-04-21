@@ -17,7 +17,6 @@ namespace MarketMonitorApp
         {
             BaseUrl = baseUrl;
             var allProducts = new List<Product>();
-            var newProduct = new Product();
             decimal parsedPrice;
             var web = new HtmlWeb();
             var currentPage = 1;
@@ -37,22 +36,13 @@ namespace MarketMonitorApp
                     var productName = productNameNode.InnerText.Trim();
                     var price = priceElement.InnerText.Trim();
 
+                    var newProduct = new Product();
                     newProduct.IdProduct = productId;
                     newProduct.Name = productName;
                     newProduct.DistributorId = distributor.Id;
                     newProduct.Distributor = distributor;
+                    newProduct.Price = price;
 
-
-                    var succeededConvert = decimal.TryParse(price, out parsedPrice);
-
-                    if (succeededConvert)
-                    {
-                        newProduct.Price = parsedPrice; 
-                    }
-                    else
-                    {
-                        newProduct.Price = 0;
-                    }
 
                     allProducts.Add(newProduct);
 

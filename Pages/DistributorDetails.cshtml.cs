@@ -51,6 +51,13 @@ public class DistributorDetailsModel : PageModel
 
     private void SaveOptions(string distributorName, List<string> options)
     {
-        var products = _priceScraper.GetPrices(options[0], Distributor);
+        var products = _priceScraper.GetPrices(options[0], Distributor).ToList();
+        if(products != null) 
+        {
+            _distributorDetailsService.AddActualization(products, Distributor);
+        }
+        
+
+
     }
 }

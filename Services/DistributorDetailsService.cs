@@ -8,7 +8,8 @@ namespace MarketMonitorApp.Services
     public interface IDistributorDetailsService
     {
         Distributor GetDistributorByName(string name);
-        void AddActualization(Distributor distributor, string categoryName, DateTime date); // Przykładowa metoda dodawania aktualizacji
+        Actualization AddActualization(List<Product> products, Distributor distributor);
+        void CheckDiferents(Actualization actualization);
     }
 
     public class DistributorDetailsService : IDistributorDetailsService
@@ -33,9 +34,21 @@ namespace MarketMonitorApp.Services
             return distributor;         
         }
 
-        public void AddActualization(Distributor distributor, string categoryName, DateTime date)
+        public Actualization AddActualization(List<Product> products, Distributor distributor)
         {
-            
+            var newActualization = new Actualization();
+            newActualization.Products = products;
+            newActualization.DistributorId = distributor.Id;
+            newActualization.Distributor = distributor;
+
+            _context.Actualizations.Add(newActualization);
+            _context.SaveChanges();
+            return newActualization;
+        }
+
+        public void CheckDiferents(Actualization actualization)
+        {
+
         }
     }
 }

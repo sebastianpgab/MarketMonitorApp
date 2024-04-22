@@ -39,8 +39,6 @@ namespace MarketMonitorApp
                     var newProduct = new Product();
                     newProduct.IdProduct = productId;
                     newProduct.Name = productName;
-                    newProduct.DistributorId = distributor.Id;
-                    newProduct.Distributor = distributor;
                     newProduct.Price = price;
 
 

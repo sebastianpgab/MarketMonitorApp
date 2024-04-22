@@ -9,7 +9,7 @@ namespace MarketMonitorApp.Services
     {
         Distributor GetDistributorByName(string name);
         Actualization AddActualization(List<Product> products, Distributor distributor);
-        void CheckDiferents(Actualization actualization);
+        void CompareProducts(Actualization actualization, int distributorId);
     }
 
     public class DistributorDetailsService : IDistributorDetailsService
@@ -46,8 +46,31 @@ namespace MarketMonitorApp.Services
             return newActualization;
         }
 
-        public void CheckDiferents(Actualization actualization)
+        public void CompareProducts(Actualization actualization, int distributorId)
         {
+            //wez produkty gdzie dystrybutor zgadza się z id 
+            //gdzie categoria zgadza się
+            //gdzie jest ostatnia aktulizacja
+            var idLastActualization = _context.Actualizations.Max(p => p.Id);
+            List<Actualization> sortedByDistributorAndActulization = null;
+            if (idLastActualization >= 1)
+            {
+
+                sortedByDistributorAndActulization = _context.Actualizations
+               .Include(p => p.Products)
+               .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization)
+               .ToList();
+
+                //id kategorii, ktora chcemy zaktalizować 
+                int IdCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
+                //lista kategorii no i co dalej ?
+                var listOfCategories = sortedByDistributorAndActulization.Select(p => p.Distributor).SelectMany(p => p.Categories).Where(p => p.Id == IdCategory).ToList();
+            }
+
+            var products = sortedByDistributorAndActulization.SelectMany(p => p.Products).ToList() ;
+
+
+
 
         }
     }

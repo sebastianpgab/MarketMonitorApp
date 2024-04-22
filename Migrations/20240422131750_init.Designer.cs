@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MarketMonitorApp.Migrations
 {
     [DbContext(typeof(MarketMonitorDbContext))]
-    [Migration("20240421072725_refactor_Product_entity")]
-    partial class refactor_Product_entity
+    [Migration("20240422131750_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,7 +38,7 @@ namespace MarketMonitorApp.Migrations
                     b.Property<bool>("IsEntered")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("LasActualisation")
+                    b.Property<DateTime>("LastActualization")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -99,10 +99,7 @@ namespace MarketMonitorApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("ActualizationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DistributorId")
+                    b.Property<int>("ActualizationId")
                         .HasColumnType("int");
 
                     b.Property<string>("IdProduct")
@@ -120,8 +117,6 @@ namespace MarketMonitorApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActualizationId");
-
-                    b.HasIndex("DistributorId");
 
                     b.ToTable("Products");
                 });
@@ -150,17 +145,13 @@ namespace MarketMonitorApp.Migrations
 
             modelBuilder.Entity("MarketMonitorApp.Entities.Product", b =>
                 {
-                    b.HasOne("MarketMonitorApp.Entities.Actualization", null)
+                    b.HasOne("MarketMonitorApp.Entities.Actualization", "Actualization")
                         .WithMany("Products")
-                        .HasForeignKey("ActualizationId");
-
-                    b.HasOne("MarketMonitorApp.Entities.Distributor", "Distributor")
-                        .WithMany()
-                        .HasForeignKey("DistributorId")
+                        .HasForeignKey("ActualizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Distributor");
+                    b.Navigation("Actualization");
                 });
 
             modelBuilder.Entity("MarketMonitorApp.Entities.Actualization", b =>

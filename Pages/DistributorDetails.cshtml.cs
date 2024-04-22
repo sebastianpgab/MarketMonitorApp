@@ -54,7 +54,8 @@ public class DistributorDetailsModel : PageModel
         var products = _priceScraper.GetPrices(options[0], Distributor).ToList();
         if(products != null) 
         {
-            _distributorDetailsService.AddActualization(products, Distributor);
+            var actualization = _distributorDetailsService.AddActualization(products, Distributor);
+             _distributorDetailsService.CompareProducts(actualization, Distributor.Id);
         }
         
 

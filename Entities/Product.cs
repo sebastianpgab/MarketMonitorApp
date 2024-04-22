@@ -6,7 +6,7 @@
         public string IdProduct { get; set; }
         public string Name { get; set; }
         public string Price { get; set; }
-        public int DistributorId { get; set; }
-        public Distributor Distributor { get; set; }
+        public int ActualizationId { get; set; }
+        public Actualization Actualization { get; set; }
     }
 }

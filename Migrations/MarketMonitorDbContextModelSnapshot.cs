@@ -97,10 +97,7 @@ namespace MarketMonitorApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("ActualizationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DistributorId")
+                    b.Property<int>("ActualizationId")
                         .HasColumnType("int");
 
                     b.Property<string>("IdProduct")
@@ -118,8 +115,6 @@ namespace MarketMonitorApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActualizationId");
-
-                    b.HasIndex("DistributorId");
 
                     b.ToTable("Products");
                 });
@@ -148,17 +143,13 @@ namespace MarketMonitorApp.Migrations
 
             modelBuilder.Entity("MarketMonitorApp.Entities.Product", b =>
                 {
-                    b.HasOne("MarketMonitorApp.Entities.Actualization", null)
+                    b.HasOne("MarketMonitorApp.Entities.Actualization", "Actualization")
                         .WithMany("Products")
-                        .HasForeignKey("ActualizationId");
-
-                    b.HasOne("MarketMonitorApp.Entities.Distributor", "Distributor")
-                        .WithMany()
-                        .HasForeignKey("DistributorId")
+                        .HasForeignKey("ActualizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Distributor");
+                    b.Navigation("Actualization");
                 });
 
             modelBuilder.Entity("MarketMonitorApp.Entities.Actualization", b =>

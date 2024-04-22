@@ -25,12 +25,12 @@ public class SeedData
                     {
                         new Category 
                         { 
-                        Name = "Bron TB",
-                        LinkToCategory = "https://twojabron.pl/kategoria/bron-nowa"
+                        Name = "Akcesoria",
+                        LinkToCategory = "https://twojabron.pl/kategoria/akcesoria"
                         },
                         new Category 
-                        { Name = "Amunicja TB",
-                          LinkToCategory = "https://twojabron.pl/kategoria/bron-nowa" 
+                        { Name = "Noktowizja",
+                          LinkToCategory = "https://twojabron.pl/kategoria/noktowizja"
                         }
                     }
                 },
@@ -64,8 +64,8 @@ public class SeedData
                     DistributorId = distributors[0].Id, 
                     Products = new List<Product>
                     {
-                        new Product { Name = "Sztucer Blaser R8", IdProduct = "001", Price = "2400", DistributorId = distributors[0].Id },
-                        new Product { Name = "Nóż Mora",  IdProduct = "002",  Price = "23231", DistributorId = distributors[0].Id }
+                        new Product { Name = "Sztucer Blaser R8", IdProduct = "001", Price = "2400"},
+                        new Product { Name = "Nóż Mora",  IdProduct = "002",  Price = "23231" }
                     }
                 },
                 new Actualization
@@ -74,8 +74,8 @@ public class SeedData
                     DistributorId = distributors[1].Id,  
                     Products = new List<Product>
                     {
-                        new Product { Name = "Aschutz 1470 sztucer kal 30-06", IdProduct = "001", Price = "32322", DistributorId = distributors[1].Id },
-                        new Product { Name = "Słuchawki Browning", IdProduct = "002", Price = "4343", DistributorId = distributors[1].Id }
+                        new Product { Name = "Aschutz 1470 sztucer kal 30-06", IdProduct = "001", Price = "32322"},
+                        new Product { Name = "Słuchawki Browning", IdProduct = "002", Price = "4343"}
                     }
                 }
             };

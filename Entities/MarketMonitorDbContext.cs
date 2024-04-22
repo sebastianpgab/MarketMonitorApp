@@ -5,7 +5,7 @@ namespace MarketMonitorApp.Entities
 {
     public class MarketMonitorDbContext : DbContext 
     {
-        private string _connectionString = "Server=SEBASTIANPGAB\\SQLEXPRESS; Database=MarketMonitorDb; Trusted_Connection=True";
+        private string _connectionString = "Server=SEBASTIANPGAB\\SQLEXPRESS; Database=MarketMonitorDataBase; Trusted_Connection=True";
         public DbSet<Actualization> Actualizations { get; set; }
         public DbSet<Distributor> Distributors { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -13,6 +13,12 @@ namespace MarketMonitorApp.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Actualization>()
+                .HasMany(a => a.Products)
+                .WithOne(p => p.Actualization)
+                .HasForeignKey(p => p.ActualizationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

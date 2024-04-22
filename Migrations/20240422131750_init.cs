@@ -29,7 +29,7 @@ namespace MarketMonitorApp.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsEntered = table.Column<bool>(type: "bit", nullable: false),
-                    LasActualisation = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastActualization = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DistributorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -50,6 +50,7 @@ namespace MarketMonitorApp.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LinkToCategory = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DistributorId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -69,10 +70,10 @@ namespace MarketMonitorApp.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    IdProduct = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DistributorId = table.Column<int>(type: "int", nullable: false),
-                    ActualizationId = table.Column<int>(type: "int", nullable: true)
+                    Price = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ActualizationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,11 +82,6 @@ namespace MarketMonitorApp.Migrations
                         name: "FK_Products_Actualizations_ActualizationId",
                         column: x => x.ActualizationId,
                         principalTable: "Actualizations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Products_Distributors_DistributorId",
-                        column: x => x.DistributorId,
-                        principalTable: "Distributors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -104,11 +100,6 @@ namespace MarketMonitorApp.Migrations
                 name: "IX_Products_ActualizationId",
                 table: "Products",
                 column: "ActualizationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_DistributorId",
-                table: "Products",
-                column: "DistributorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

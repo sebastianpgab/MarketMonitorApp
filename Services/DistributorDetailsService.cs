@@ -1,4 +1,5 @@
 ﻿using MarketMonitorApp.Entities;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -55,19 +56,50 @@ namespace MarketMonitorApp.Services
             List<Actualization> sortedByDistributorAndActulization = null;
             if (idLastActualization >= 1)
             {
-
+                //pobranie odpowiedniego dystrybutora oraz ostatnią aktulizację
                 sortedByDistributorAndActulization = _context.Actualizations
                .Include(p => p.Products)
-               .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization)
+               .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization-1)
                .ToList();
 
+
                 //id kategorii, ktora chcemy zaktalizować 
-                int IdCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
+                int idCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
                 //lista kategorii no i co dalej ?
-                var listOfCategories = sortedByDistributorAndActulization.Select(p => p.Distributor).SelectMany(p => p.Categories).Where(p => p.Id == IdCategory).ToList();
+
+                var result = sortedByDistributorAndActulization
+                    .Where(actualization => actualization.Distributor.Categories.FirstOrDefault(category => category.Id == idCategory) != null)
+                    .ToList();
+
+                var productsTab = sortedByDistributorAndActulization.SelectMany(p => p.Products).ToList();
+
+                var newProducts = actualization.Products.ToList();
+
+                List<Product> list = new List<Product>();
+
+                foreach (var itemTab in productsTab)
+                {
+                    if(itemTab != null && newProducts != null)
+                    {
+                       var product = newProducts.Where( p => p.IdProduct == itemTab.IdProduct).FirstOrDefault();
+                        if(product != null)
+                        {
+                            if(product.Price != itemTab.Price){
+                                list.Add(product);
+                            }
+                        }
+
+                    }
+
+                    
+                }
+            }
+            else
+            {
+                return ;
             }
 
-            var products = sortedByDistributorAndActulization.SelectMany(p => p.Products).ToList() ;
+
 
 
 

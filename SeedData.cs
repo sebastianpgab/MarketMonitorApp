@@ -64,8 +64,8 @@ public class SeedData
                     DistributorId = distributors[0].Id, 
                     Products = new List<Product>
                     {
-                        new Product { Name = "Sztucer Blaser R8", IdProduct = "001", Price = "2400"},
-                        new Product { Name = "Nóż Mora",  IdProduct = "002",  Price = "23231" }
+                        new Product { Name = "Sztucer Blaser R8", IdProduct = "001", Price = 665},
+                        new Product { Name = "Nóż Mora",  IdProduct = "002",  Price = 543 }
                     }
                 },
                 new Actualization
@@ -74,8 +74,8 @@ public class SeedData
                     DistributorId = distributors[1].Id,  
                     Products = new List<Product>
                     {
-                        new Product { Name = "Aschutz 1470 sztucer kal 30-06", IdProduct = "001", Price = "32322"},
-                        new Product { Name = "Słuchawki Browning", IdProduct = "002", Price = "4343"}
+                        new Product { Name = "Aschutz 1470 sztucer kal 30-06", IdProduct = "001", Price = 23323},
+                        new Product { Name = "Słuchawki Browning", IdProduct = "002", Price = 123}
                     }
                 }
             };

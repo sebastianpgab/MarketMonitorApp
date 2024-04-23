@@ -1,6 +1,8 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace MarketMonitorApp
 {
@@ -17,14 +19,14 @@ namespace MarketMonitorApp
         {
             BaseUrl = baseUrl;
             var allProducts = new List<Product>();
-            decimal parsedPrice;
-            var web = new HtmlWeb();
-            var currentPage = 1;
-            var lastPage = GetLastPageNumber(web);
+            HtmlWeb web = new HtmlWeb();
+            int currentPage = 1;
+            int lastPage = GetLastPageNumber(web);
 
             while (currentPage <= lastPage)
             {
-                var pageUrl = $"{BaseUrl}?page={currentPage}";
+                web = new HtmlWeb();
+                var pageUrl = $"{BaseUrl}/{currentPage}";
                 var document = web.Load(pageUrl);
                 var products = document.DocumentNode.QuerySelectorAll(".product");
 
@@ -36,10 +38,14 @@ namespace MarketMonitorApp
                     var productName = productNameNode.InnerText.Trim();
                     var price = priceElement.InnerText.Trim();
 
+                    decimal newPrice;
+                    string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
+                    bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+
                     var newProduct = new Product();
                     newProduct.IdProduct = productId;
                     newProduct.Name = productName;
-                    newProduct.Price = price;
+                    newProduct.Price = newPrice;
 
 
                     allProducts.Add(newProduct);

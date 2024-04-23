@@ -49,23 +49,16 @@ namespace MarketMonitorApp.Services
 
         public void CompareProducts(Actualization actualization, int distributorId)
         {
-            //wez produkty gdzie dystrybutor zgadza się z id 
-            //gdzie categoria zgadza się
-            //gdzie jest ostatnia aktulizacja
             var idLastActualization = _context.Actualizations.Max(p => p.Id);
             List<Actualization> sortedByDistributorAndActulization = null;
             if (idLastActualization >= 1)
             {
-                //pobranie odpowiedniego dystrybutora oraz ostatnią aktulizację
                 sortedByDistributorAndActulization = _context.Actualizations
                .Include(p => p.Products)
                .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization-1)
                .ToList();
 
-
-                //id kategorii, ktora chcemy zaktalizować 
                 int idCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
-                //lista kategorii no i co dalej ?
 
                 var result = sortedByDistributorAndActulization
                     .Where(actualization => actualization.Distributor.Categories.FirstOrDefault(category => category.Id == idCategory) != null)

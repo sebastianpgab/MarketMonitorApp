@@ -47,7 +47,6 @@ namespace MarketMonitorApp
                     newProduct.Name = productName;
                     newProduct.Price = newPrice;
 
-
                     allProducts.Add(newProduct);
 
                 }

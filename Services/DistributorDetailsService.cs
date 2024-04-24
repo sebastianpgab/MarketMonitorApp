@@ -1,7 +1,10 @@
-﻿using MarketMonitorApp.Entities;
+﻿using CsvHelper;
+using MarketMonitorApp.Entities;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Formats.Asn1;
+using System.Globalization;
 using System.Linq;
 
 namespace MarketMonitorApp.Services
@@ -10,7 +13,9 @@ namespace MarketMonitorApp.Services
     {
         Distributor GetDistributorByName(string name);
         Actualization AddActualization(List<Product> products, Distributor distributor);
-        void CompareProducts(Actualization actualization, int distributorId);
+        List<Product> CompareProducts(Actualization actualization, int distributorId);
+        void ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization);
+
     }
 
     public class DistributorDetailsService : IDistributorDetailsService
@@ -24,15 +29,15 @@ namespace MarketMonitorApp.Services
 
         public Distributor GetDistributorByName(string name)
         {
-           var distributor = _context.Distributors
-                                          .Include(d => d.Categories)
-                                          .FirstOrDefault(d => d.Name == name);
+            var distributor = _context.Distributors
+                                           .Include(d => d.Categories)
+                                           .FirstOrDefault(d => d.Name == name);
             if (distributor == null)
             {
                 throw new InvalidOperationException("Dystrybutor o tej nazwie nie został znaleziony.");
             }
 
-            return distributor;         
+            return distributor;
         }
 
         public Actualization AddActualization(List<Product> products, Distributor distributor)
@@ -47,7 +52,7 @@ namespace MarketMonitorApp.Services
             return newActualization;
         }
 
-        public void CompareProducts(Actualization actualization, int distributorId)
+        public List<Product> CompareProducts(Actualization actualization, int distributorId)
         {
             var idLastActualization = _context.Actualizations.Max(p => p.Id);
             List<Actualization> sortedByDistributorAndActulization = null;
@@ -55,7 +60,7 @@ namespace MarketMonitorApp.Services
             {
                 sortedByDistributorAndActulization = _context.Actualizations
                .Include(p => p.Products)
-               .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization-1)
+               .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization - 1)
                .ToList();
 
                 int idCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
@@ -68,35 +73,58 @@ namespace MarketMonitorApp.Services
 
                 var newProducts = actualization.Products.ToList();
 
-                List<Product> list = new List<Product>();
+                List<Product> comparedProdcuts = new List<Product>();
 
                 foreach (var itemTab in productsTab)
                 {
-                    if(itemTab != null && newProducts != null)
+                    if (itemTab != null && newProducts != null)
                     {
-                       var product = newProducts.Where( p => p.IdProduct == itemTab.IdProduct).FirstOrDefault();
-                        if(product != null)
+                        var product = newProducts.Where(p => p.IdProduct == itemTab.IdProduct).FirstOrDefault();
+                        if (product != null)
                         {
-                            if(product.Price != itemTab.Price){
-                                list.Add(product);
+                            if (product.Price != itemTab.Price)
+                            {
+                                comparedProdcuts.Add(product);
                             }
                         }
 
                     }
 
-                    
                 }
+                return comparedProdcuts;
             }
             else
             {
-                return ;
+                return null;
+            }
+        }
+
+        public void ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization)
+        {
+            if (comparedProducts == null || comparedProducts.Count == 0)
+            {
+                throw new InvalidOperationException("Compared products not found or the list is empty.");
             }
 
+            var categoryName = actualization.Distributor.Categories.Select(p => p.Name).First();
+            var distributorName = actualization.Distributor.Name;
 
 
+            string filePath = @"C:\Users\SPiatkowski\Desktop\x";
 
+            DateTime currentData = DateTime.Now;
 
+            string currentDataConverted = currentData.ToString("dd-MM-yyyy HH-mm");
+            string fileName = $"{distributorName}-{categoryName}-{currentDataConverted}-products.csv";
+            string fullPath = Path.Combine(filePath, fileName);
 
+            using (var writer = new StreamWriter(fullPath))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(comparedProducts);
+            }
         }
+
+
     }
 }

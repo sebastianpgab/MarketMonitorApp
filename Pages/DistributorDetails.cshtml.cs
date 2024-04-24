@@ -21,7 +21,7 @@ public class DistributorDetailsModel : PageModel
         _context = context;
         _distributorDetailsService = distributorDetailsService;
         _priceScraper = priceScraper;
-}
+    }
 
     [BindProperty(SupportsGet = true)]
     public string DistributorName { get; set; }
@@ -41,7 +41,7 @@ public class DistributorDetailsModel : PageModel
     {
         if (SelectedOptions != null && SelectedOptions.Count > 0)
         {
-            Distributor = _distributorDetailsService.GetDistributorByName(DistributorName); 
+            Distributor = _distributorDetailsService.GetDistributorByName(DistributorName);
             if (Distributor != null)
             {
                 SaveOptions(DistributorName, SelectedOptions);
@@ -52,12 +52,13 @@ public class DistributorDetailsModel : PageModel
     private void SaveOptions(string distributorName, List<string> options)
     {
         var products = _priceScraper.GetPrices(options[0], Distributor).ToList();
-        if(products != null) 
+        if (products != null)
         {
             var actualization = _distributorDetailsService.AddActualization(products, Distributor);
-             _distributorDetailsService.CompareProducts(actualization, Distributor.Id);
+            var comparedProducts = _distributorDetailsService.CompareProducts(actualization, Distributor.Id);
+            _distributorDetailsService.ExportProductsToCsv(comparedProducts, actualization);
         }
-        
+
 
 
     }

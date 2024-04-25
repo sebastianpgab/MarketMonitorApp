@@ -13,8 +13,10 @@ namespace MarketMonitorApp.Services
     {
         Distributor GetDistributorByName(string name);
         Actualization AddActualization(List<Product> products, Distributor distributor);
-        List<Product> CompareProducts(Actualization actualization, int distributorId);
-        void ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization);
+        List<Product> CompareProducts(Actualization actualization);
+        bool ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization);
+        public List<Product> LastUpdatedProducts(Actualization actualization);
+
 
     }
 
@@ -52,7 +54,69 @@ namespace MarketMonitorApp.Services
             return newActualization;
         }
 
-        public List<Product> CompareProducts(Actualization actualization, int distributorId)
+        public List<Product> CompareProducts(Actualization actualization)
+        {
+            var productsTab = LastUpdatedProducts(actualization);
+            if (productsTab == null) return null; 
+
+            var latestUpdatedProducts = actualization.Products.ToList();
+            List<Product> comparedProducts = new List<Product>();
+
+            
+            var productsTabIds = new HashSet<string>(productsTab.Select(p => p.IdProduct));
+
+            foreach (var product in latestUpdatedProducts)
+            {
+                
+                if (!productsTabIds.Contains(product.IdProduct))
+                {
+                    product.IsNew = true; 
+                    comparedProducts.Add(product);
+                }
+                else
+                {
+                    
+                    var originalProduct = productsTab.FirstOrDefault(p => p.IdProduct == product.IdProduct);
+                    if (originalProduct != null && originalProduct.Price != product.Price)
+                    {
+                        comparedProducts.Add(product); 
+                    }
+                }
+            }
+
+            return comparedProducts;
+        }
+
+
+
+        public bool ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization)
+        {
+            if (comparedProducts == null || comparedProducts.Count == 0)
+            {
+                return false;
+            }
+
+            var categoryName = actualization.Distributor.Categories.Select(p => p.Name).First();
+            var distributorName = actualization.Distributor.Name;
+
+
+            string filePath = @"C:\Users\damia\Desktop\x";
+
+            DateTime currentData = DateTime.Now;
+
+            string currentDataConverted = currentData.ToString("dd-MM-yyyy HH-mm");
+            string fileName = $"{distributorName}-{categoryName}-{currentDataConverted}-products.csv";
+            string fullPath = Path.Combine(filePath, fileName);
+
+            using (var writer = new StreamWriter(fullPath))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(comparedProducts);
+            }
+            return true;
+        }
+
+        public List<Product> LastUpdatedProducts(Actualization actualization)
         {
             var idLastActualization = _context.Actualizations.Max(p => p.Id);
             List<Actualization> sortedByDistributorAndActulization = null;
@@ -71,58 +135,10 @@ namespace MarketMonitorApp.Services
 
                 var productsTab = sortedByDistributorAndActulization.SelectMany(p => p.Products).ToList();
 
-                var newProducts = actualization.Products.ToList();
-
-                List<Product> comparedProdcuts = new List<Product>();
-
-                foreach (var itemTab in productsTab)
-                {
-                    if (itemTab != null && newProducts != null)
-                    {
-                        var product = newProducts.Where(p => p.IdProduct == itemTab.IdProduct).FirstOrDefault();
-                        if (product != null)
-                        {
-                            if (product.Price != itemTab.Price)
-                            {
-                                comparedProdcuts.Add(product);
-                            }
-                        }
-
-                    }
-
-                }
-                return comparedProdcuts;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public void ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization)
-        {
-            if (comparedProducts == null || comparedProducts.Count == 0)
-            {
-                throw new InvalidOperationException("Compared products not found or the list is empty.");
+                return productsTab;
             }
 
-            var categoryName = actualization.Distributor.Categories.Select(p => p.Name).First();
-            var distributorName = actualization.Distributor.Name;
-
-
-            string filePath = @"C:\Users\SPiatkowski\Desktop\x";
-
-            DateTime currentData = DateTime.Now;
-
-            string currentDataConverted = currentData.ToString("dd-MM-yyyy HH-mm");
-            string fileName = $"{distributorName}-{categoryName}-{currentDataConverted}-products.csv";
-            string fullPath = Path.Combine(filePath, fileName);
-
-            using (var writer = new StreamWriter(fullPath))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                csv.WriteRecords(comparedProducts);
-            }
+            return null;        
         }
 
 

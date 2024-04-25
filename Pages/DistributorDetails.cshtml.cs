@@ -54,8 +54,9 @@ public class DistributorDetailsModel : PageModel
         var products = _priceScraper.GetPrices(options[0], Distributor).ToList();
         if (products != null)
         {
+            var newProdcuts = new List<string>();
             var actualization = _distributorDetailsService.AddActualization(products, Distributor);
-            var comparedProducts = _distributorDetailsService.CompareProducts(actualization, Distributor.Id);
+            var comparedProducts = _distributorDetailsService.CompareProducts(actualization);
             _distributorDetailsService.ExportProductsToCsv(comparedProducts, actualization);
         }
 

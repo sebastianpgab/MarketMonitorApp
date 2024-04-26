@@ -14,9 +14,9 @@ namespace MarketMonitorApp.Services
         Distributor GetDistributorByName(string name);
         Actualization AddActualization(List<Product> products, Distributor distributor);
         List<Product> CompareProducts(Actualization actualization);
-        bool ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization);
+        bool ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization, string categoryName);
         public List<Product> LastUpdatedProducts(Actualization actualization);
-
+        public string GetCategoryByLink(string link);
 
     }
 
@@ -36,10 +36,22 @@ namespace MarketMonitorApp.Services
                                            .FirstOrDefault(d => d.Name == name);
             if (distributor == null)
             {
-                throw new InvalidOperationException("Dystrybutor o tej nazwie nie został znaleziony.");
+                return null;
             }
 
             return distributor;
+        }
+
+        public string GetCategoryByLink(string link)
+        {
+            var category = _context.Categories.FirstOrDefault(p => p.LinkToCategory == link);
+            if (category == null)
+            {
+                return null;
+            }
+
+            var categoryName = category.Name;
+            return categoryName;
         }
 
         public Actualization AddActualization(List<Product> products, Distributor distributor)
@@ -89,14 +101,13 @@ namespace MarketMonitorApp.Services
 
 
 
-        public bool ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization)
+        public bool ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization, string categoryName)
         {
             if (comparedProducts == null || comparedProducts.Count == 0)
             {
                 return false;
             }
 
-            var categoryName = actualization.Distributor.Categories.Select(p => p.Name).First();
             var distributorName = actualization.Distributor.Name;
 
 
@@ -104,7 +115,7 @@ namespace MarketMonitorApp.Services
 
             DateTime currentData = DateTime.Now;
 
-            string currentDataConverted = currentData.ToString("dd-MM-yyyy HH-mm");
+            string currentDataConverted = currentData.ToString("dd MM yyyy__HH-mm-ss");
             string fileName = $"{distributorName}-{categoryName}-{currentDataConverted}-products.csv";
             string fullPath = Path.Combine(filePath, fileName);
 
@@ -128,10 +139,6 @@ namespace MarketMonitorApp.Services
                .ToList();
 
                 int idCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
-
-                var result = sortedByDistributorAndActulization
-                    .Where(actualization => actualization.Distributor.Categories.FirstOrDefault(category => category.Id == idCategory) != null)
-                    .ToList();
 
                 var productsTab = sortedByDistributorAndActulization.SelectMany(p => p.Products).ToList();
 

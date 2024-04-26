@@ -36,18 +36,18 @@ public class SeedData
                 },
                 new Distributor
                 {
-                    Name = "Knieja",
+                    Name = "Delta Optical",
                     Categories = new List<Category>
                     {
                         new Category 
                         {
-                            Name = "Ubrania TB", 
-                            LinkToCategory = "https://twojabron.pl/kategoria/bron-nowa" 
+                            Name = "Lornetki", 
+                            LinkToCategory = "https://deltaoptical.pl/lornetki/page:"
                         },
                         new Category 
                         {
-                           Name = "Ochorna słuchu TB",
-                           LinkToCategory = "https://twojabron.pl/kategoria/bron-nowa"
+                           Name = "Termowizory",
+                           LinkToCategory = "https://deltaoptical.pl/termowizory/page:"
                         }
                     }
                 }

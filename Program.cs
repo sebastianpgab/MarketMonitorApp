@@ -1,6 +1,8 @@
 using MarketMonitorApp;
 using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
+using MarketMonitorApp.Services.ProductPatterns;
+using MarketMonitorApp.Services.ProductsStrategy;
 using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<MarketMonitorDbContext>();
 builder.Services.AddScoped<SeedData>();
 builder.Services.AddScoped<IDistributorDetailsService, DistributorDetailsService>();
+builder.Services.AddScoped<IDistributorStrategy, TwojaBronStrategy>();
+builder.Services.AddScoped<IDistributorStrategySelector, DistributorStrategySelector>();
+
 builder.Services.AddScoped<IPriceScraper, PriceScraper>();
 
 

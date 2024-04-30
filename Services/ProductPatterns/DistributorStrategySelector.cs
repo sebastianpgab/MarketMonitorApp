@@ -23,7 +23,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 }
                 case ("Delta Optical"):
                 {
-                    return null;
+                    return new DeltaOpticalStrategy();
                 }
                 default:
                     return null;

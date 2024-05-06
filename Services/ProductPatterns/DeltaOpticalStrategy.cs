@@ -11,8 +11,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
     {
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage, HtmlDocument document)
         {
+            baseUrl = "https://deltaoptical.pl/termowizory";
             var products = new List<Product>();
-            var productNodes = document.DocumentNode.QuerySelectorAll(".product-list");
+            var productNodes = document.DocumentNode.QuerySelectorAll("ul.product-list.info.col-4 > li");
 
             foreach (var productNode in productNodes)
             {

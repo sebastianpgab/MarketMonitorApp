@@ -1,8 +1,11 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System;
 
 
 namespace MarketMonitorApp.Services.ProductPatterns
@@ -11,33 +14,63 @@ namespace MarketMonitorApp.Services.ProductPatterns
     {
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage, HtmlDocument document)
         {
-            baseUrl = "https://deltaoptical.pl/termowizory";
-            var products = new List<Product>();
-            var productNodes = document.DocumentNode.QuerySelectorAll("ul.product-list.info.col-4 > li");
+            // Konfiguracja ścieżki do ChromeDriver
+            var service = ChromeDriverService.CreateDefaultService();
+            var options = new ChromeOptions();
+            options.AddArguments("headless"); // Uruchomienie przeglądarki w trybie bezgłowym
 
-            foreach (var productNode in productNodes)
+            // Inicjalizacja WebDriver
+            using (var driver = new ChromeDriver(service, options))
             {
-                var productId = productNode.GetAttributeValue("data-product-id", string.Empty);
-                var productNameNode = productNode.QuerySelector(".product-name");
-                var priceElement = productNode.QuerySelector(".price");
+                try
+                {
+                    // Przechodzenie do strony
+                    driver.Navigate().GoToUrl("https://deltaoptical.pl/termowizory");
+                    Thread.Sleep(2000); // Odczekanie, aby strona mogła załadować dane na początku
 
-                var productName = productNameNode.InnerText.Trim();
-                var price = priceElement.InnerText.Trim();
+                    // Symulacja przewijania strony
+                    IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                    int numberOfItems = 0;
+                    while (true)
+                    {
+                        var newNumberOfItems = driver.FindElements(By.CssSelector("li[data-product-id]")).Count;
+                        if (newNumberOfItems == numberOfItems)
+                            break; // Przerwanie, gdy liczba elementów się nie zmienia
+                        numberOfItems = newNumberOfItems;
+                        js.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
+                        Thread.Sleep(2000); // Odczekanie na załadowanie nowych danych
+                    }
 
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                    // Zbieranie danych produktów
+                    var products = driver.FindElements(By.CssSelector("li[data-product-id]"));
+                    var productList = new List<(string Id, string Name, string Price)>();
 
-                var newProduct = new Product();
-                newProduct.IdProduct = productId;
-                newProduct.Name = productName;
-                newProduct.Price = newPrice;
+                    foreach (var productElement in products)
+                    {
+                        string productId = productElement.GetAttribute("data-product-id");
+                        string productName = productElement.FindElement(By.CssSelector("h2.product-name > a")).GetAttribute("title");
+                        string productPrice = productElement.FindElement(By.CssSelector(".product-column .price")).Text;
+                        productList.Add((productId, productName, productPrice));
+                    }
 
-                products.Add(newProduct);
+                    // Wyświetlanie informacji o wszystkich produktach
+                    //spróbuj tego: document.querySelector("ul.product-list > li div.price-container > span.price")
 
+                    foreach (var product in productList)
+                    {
+                        Console.WriteLine($"ID produktu: {product.Id}, Nazwa produktu: {product.Name}, Cena produktu: {product.Price}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Wystąpił błąd: " + ex.Message);
+                }
+                finally
+                {
+                    driver.Quit(); // Zamknięcie przeglądarki
+                }
             }
-
-            return products;
+            return null;
         }
     }
 }

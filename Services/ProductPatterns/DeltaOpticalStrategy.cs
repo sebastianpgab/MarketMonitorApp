@@ -3,10 +3,7 @@ using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System;
-
+using OpenQA.Selenium.Support.UI;
 
 namespace MarketMonitorApp.Services.ProductPatterns
 {
@@ -16,6 +13,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             // Konfiguracja ścieżki do ChromeDriver
             var service = ChromeDriverService.CreateDefaultService();
+            service.SuppressInitialDiagnosticInformation = true;
+            service.HideCommandPromptWindow = true;
             var options = new ChromeOptions();
             options.AddArguments("headless"); // Uruchomienie przeglądarki w trybie bezgłowym
 
@@ -24,24 +23,38 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 try
                 {
-                    // Przechodzenie do strony
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                    // Przejdź na stronę z produktami
                     driver.Navigate().GoToUrl("https://deltaoptical.pl/termowizory");
-                    Thread.Sleep(2000); // Odczekanie, aby strona mogła załadować dane na początku
+                    IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+                    wait.Until(driver => (string)jsExecutor.ExecuteScript("return document.readyState") == "complete");
+
+                    // Akceptacja plików cookie za pomocą JavaScript
+                    try
+                    {
+                        var acceptCookiesButton = wait.Until(driver => driver.FindElement(By.CssSelector(".btn.btn-primary[data-type='accept-cookies-button']")));
+                        IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                        jsExecutor.ExecuteScript("arguments[0].click();", acceptCookiesButton);
+                        Console.WriteLine("Cookie files was accepted");
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        Console.WriteLine("There was not baner with cookie files");
+                    }
 
                     // Symulacja przewijania strony
-                    IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
                     int numberOfItems = 0;
                     while (true)
                     {
+                        // problem jest taki ze zbiera tylko 9 produktów
                         var newNumberOfItems = driver.FindElements(By.CssSelector("li[data-product-id]")).Count;
                         if (newNumberOfItems == numberOfItems)
                             break; // Przerwanie, gdy liczba elementów się nie zmienia
                         numberOfItems = newNumberOfItems;
-                        js.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
-                        Thread.Sleep(2000); // Odczekanie na załadowanie nowych danych
+                        jsExecutor.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
+                        wait.Until(driver => (string)jsExecutor.ExecuteScript("return document.readyState") == "complete");
                     }
 
-                    // Zbieranie danych produktów
                     var products = driver.FindElements(By.CssSelector("li[data-product-id]"));
                     var productList = new List<(string Id, string Name, string Price)>();
 
@@ -53,23 +66,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
                         productList.Add((productId, productName, productPrice));
                     }
 
-                    // Wyświetlanie informacji o wszystkich produktach
-                    //spróbuj tego: document.querySelector("ul.product-list > li div.price-container > span.price")
-
-                    foreach (var product in productList)
-                    {
-                        Console.WriteLine($"ID produktu: {product.Id}, Nazwa produktu: {product.Name}, Cena produktu: {product.Price}");
-                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Wystąpił błąd: " + ex.Message);
+                    Console.WriteLine("Fail: " + ex.Message);
                 }
                 finally
                 {
-                    driver.Quit(); // Zamknięcie przeglądarki
+                    driver.Quit();
                 }
             }
+
             return null;
         }
     }

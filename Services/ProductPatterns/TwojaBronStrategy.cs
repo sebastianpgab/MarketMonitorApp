@@ -8,12 +8,17 @@ namespace MarketMonitorApp.Services.ProductsStrategy
 {
     public class TwojaBronStrategy : IDistributorStrategy
     {
-        public IEnumerable<Product> GetProducts(string baseUrl, int currentPage, HtmlDocument document)
+
+        public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
+            var web = new HtmlWeb();
+            var pageUrl = $"{baseUrl}/{currentPage}";
+            var document = web.Load(pageUrl);
+
             var products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".product");
 
-            foreach( var productNode in productNodes )
+            foreach (var productNode in productNodes)
             {
                 var productId = productNode.GetAttributeValue("data-product-id", string.Empty);
                 var productNameNode = productNode.QuerySelector(".prodname");
@@ -36,6 +41,26 @@ namespace MarketMonitorApp.Services.ProductsStrategy
             }
 
             return products;
+        }
+
+        public int GetLastPageNumber(HtmlWeb web, string baseUrl)
+        {
+            var document = web.Load(baseUrl);
+            var paginationLinks = document.DocumentNode.QuerySelectorAll(".paginator li a")
+                                                        .Where(a => int.TryParse(a.InnerText.Trim(), out _))
+                                                        .ToList();
+
+            var lastPageNumber = 1;
+
+            if (paginationLinks.Any())
+            {
+                if (int.TryParse(paginationLinks.Last().InnerText.Trim(), out int pageNumber))
+                {
+                    lastPageNumber = pageNumber;
+                }
+            }
+
+            return lastPageNumber;
         }
     }
 }

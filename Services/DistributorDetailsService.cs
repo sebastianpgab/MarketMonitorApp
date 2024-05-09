@@ -69,29 +69,29 @@ namespace MarketMonitorApp.Services
         public List<Product> CompareProducts(Actualization actualization)
         {
             var productsTab = LastUpdatedProducts(actualization);
-            if (productsTab == null) return null; 
+            if (productsTab == null) return null;
 
             var latestUpdatedProducts = actualization.Products.ToList();
             List<Product> comparedProducts = new List<Product>();
 
-            
+
             var productsTabIds = new HashSet<string>(productsTab.Select(p => p.IdProduct));
 
             foreach (var product in latestUpdatedProducts)
             {
-                
+
                 if (!productsTabIds.Contains(product.IdProduct))
                 {
-                    product.IsNew = true; 
+                    product.IsNew = true;
                     comparedProducts.Add(product);
                 }
                 else
                 {
-                    
+
                     var originalProduct = productsTab.FirstOrDefault(p => p.IdProduct == product.IdProduct);
                     if (originalProduct != null && originalProduct.Price != product.Price)
                     {
-                        comparedProducts.Add(product); 
+                        comparedProducts.Add(product);
                     }
                 }
             }
@@ -111,7 +111,7 @@ namespace MarketMonitorApp.Services
             var distributorName = actualization.Distributor.Name;
 
 
-            string filePath = @"C:\Users\damia\Desktop\x";
+            string filePath = @"C:\Users\SPiatkowski\Desktop\eksele";
 
             DateTime currentData = DateTime.Now;
 
@@ -137,6 +137,7 @@ namespace MarketMonitorApp.Services
                .Include(p => p.Products)
                .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization - 1)
                .ToList();
+                // tu trzeba zrobić, żeby tez sprawdzało link do kategorii !
 
                 int idCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
 
@@ -145,7 +146,7 @@ namespace MarketMonitorApp.Services
                 return productsTab;
             }
 
-            return null;        
+            return null;
         }
 
 

@@ -12,11 +12,11 @@ namespace MarketMonitorApp.Services
     public interface IDistributorDetailsService
     {
         Distributor GetDistributorByName(string name);
-        Actualization AddActualization(List<Product> products, Distributor distributor);
-        List<Product> CompareProducts(Actualization actualization);
+        Actualization AddActualization(List<Product> products, Distributor distributor, Category category);
+        List<Product> CompareProducts(Actualization actualization, Category category);
         bool ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization, string categoryName);
-        public List<Product> LastUpdatedProducts(Actualization actualization);
-        public string GetCategoryByLink(string link);
+        public List<Product> LastUpdatedProducts(Actualization actualization, Category category);
+        public Category GetCategoryByLink(string link);
 
     }
 
@@ -42,7 +42,7 @@ namespace MarketMonitorApp.Services
             return distributor;
         }
 
-        public string GetCategoryByLink(string link)
+        public Category GetCategoryByLink(string link)
         {
             var category = _context.Categories.FirstOrDefault(p => p.LinkToCategory == link);
             if (category == null)
@@ -50,25 +50,25 @@ namespace MarketMonitorApp.Services
                 return null;
             }
 
-            var categoryName = category.Name;
-            return categoryName;
+            return category;
         }
 
-        public Actualization AddActualization(List<Product> products, Distributor distributor)
+        public Actualization AddActualization(List<Product> products, Distributor distributor, Category category)
         {
             var newActualization = new Actualization();
             newActualization.Products = products;
             newActualization.DistributorId = distributor.Id;
             newActualization.Distributor = distributor;
+            newActualization.CategoryId = category.Id;
 
             _context.Actualizations.Add(newActualization);
             _context.SaveChanges();
             return newActualization;
         }
 
-        public List<Product> CompareProducts(Actualization actualization)
+        public List<Product> CompareProducts(Actualization actualization, Category category)
         {
-            var productsTab = LastUpdatedProducts(actualization);
+            var productsTab = LastUpdatedProducts(actualization, category);
             if (productsTab == null) return null;
 
             var latestUpdatedProducts = actualization.Products.ToList();
@@ -111,7 +111,7 @@ namespace MarketMonitorApp.Services
             var distributorName = actualization.Distributor.Name;
 
 
-            string filePath = @"C:\Users\SPiatkowski\Desktop\eksele";
+            string filePath = @"C:\Users\damia\Desktop\x";
 
             DateTime currentData = DateTime.Now;
 
@@ -127,27 +127,31 @@ namespace MarketMonitorApp.Services
             return true;
         }
 
-        public List<Product> LastUpdatedProducts(Actualization actualization)
+        public List<Product> LastUpdatedProducts(Actualization actualization, Category category)
         {
-            var idLastActualization = _context.Actualizations.Max(p => p.Id);
-            List<Actualization> sortedByDistributorAndActulization = null;
-            if (idLastActualization >= 1)
+            // Znajdź ostatnią aktualizację
+            var actualizations = _context.Actualizations.Max(p => p.Id);
+
+            if (actualizations >= 1)
             {
-                sortedByDistributorAndActulization = _context.Actualizations
-               .Include(p => p.Products)
-               .Where(p => p.DistributorId == actualization.DistributorId && p.Id == idLastActualization - 1)
-               .ToList();
-                // tu trzeba zrobić, żeby tez sprawdzało link do kategorii !
+                // Pobierz ostatnią aktualizację z odpowiednim dystrybutorem i kategorią
+                var lastActualization = _context.Actualizations
+                    .Include(p => p.Products)  // Uwzględnij powiązane produkty
+                    .Where(p => p.DistributorId == actualization.DistributorId && p.CategoryId == category.Id)
+                    .OrderByDescending(p => p.Id)
+                    .Skip(1) // Pomija ostatni dodany element, czyli bierze przedostatni
+                    .FirstOrDefault();
 
-                int idCategory = actualization.Distributor.Categories.Select(p => p.Id).First();
-
-                var productsTab = sortedByDistributorAndActulization.SelectMany(p => p.Products).ToList();
-
-                return productsTab;
+                if (lastActualization != null)
+                {
+                    // Pobierz produkty powiązane z tą aktualizacją
+                    return lastActualization.Products.ToList();
+                }
             }
 
-            return null;
+            return new List<Product>(); // Zwraca pustą listę zamiast `null`
         }
+
 
 
     }

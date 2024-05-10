@@ -54,10 +54,10 @@ public class DistributorDetailsModel : PageModel
         var products = _priceScraper.GetProducts(options[0], Distributor).ToList();
         if (products != null)
         {
-            var categoryName = _distributorDetailsService.GetCategoryByLink(options[0]);
-            var actualization = _distributorDetailsService.AddActualization(products, Distributor);
-            var comparedProducts = _distributorDetailsService.CompareProducts(actualization);
-            _distributorDetailsService.ExportProductsToCsv(comparedProducts, actualization, categoryName);
+            var category = _distributorDetailsService.GetCategoryByLink(options[0]);
+            var actualization = _distributorDetailsService.AddActualization(products, Distributor, category);
+            var comparedProducts = _distributorDetailsService.CompareProducts(actualization, category);
+            _distributorDetailsService.ExportProductsToCsv(comparedProducts, actualization, category.Name);
         }
 
 

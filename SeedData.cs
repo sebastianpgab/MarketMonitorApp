@@ -42,15 +42,39 @@ public class SeedData
                         new Category 
                         {
                             Name = "Lornetki", 
-                            LinkToCategory = "https://deltaoptical.pl/lornetki/page:"
+                            LinkToCategory = "https://deltaoptical.pl/lornetki"
                         },
                         new Category 
                         {
                            Name = "Termowizory",
-                           LinkToCategory = "https://deltaoptical.pl/termowizory/page:"
+                           LinkToCategory = "https://deltaoptical.pl/termowizory"
+                        },
+                        new Category
+                        {
+                           Name = "Lunety celownicze",
+                           LinkToCategory = "https://deltaoptical.pl/lunety-celownicze"
+                        },
+                        new Category
+                        {
+                           Name = "Lunety obserwacyjne",
+                           LinkToCategory = "https://deltaoptical.pl/lunety-obserwacyjne"
                         }
                     }
+                }, 
+                new Distributor
+                {
+                    Name = "Hubertus Białystok",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Ceska Zbrojovka",
+                            LinkToCategory = "https://hubertus.com.pl/search/6,1,default-asc/text=ceska/pl.html"
+                        }
+                    }
+
                 }
+
             };
 
             _marketMonitorDbContext.Distributors.AddRange(distributors);

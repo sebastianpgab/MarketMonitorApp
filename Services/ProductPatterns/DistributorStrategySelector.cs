@@ -17,9 +17,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new TwojaBronStrategy();
                 }
-                case ("Knieja"):
+                case ("Hubertus Białystok"):
                 {
-                    return null;
+                    return new HubertusBialystokStrategy();
                 }
                 case ("Delta Optical"):
                 {

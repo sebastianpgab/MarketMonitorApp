@@ -11,28 +11,39 @@ namespace MarketMonitorApp.Services.ProductPatterns
     {
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var web = new HtmlWeb();
-            var pageUrl = $"{baseUrl}";
-            var document = web.Load(pageUrl);
+            var web = new HtmlWeb(); //34
+
+            string pattern = @"(?<=search/\d+,)\d+(?=,default-asc)";
+            string replacement = currentPage.ToString();
+            string modifiedUrl = Regex.Replace(baseUrl, pattern, replacement);
+
+
+            var document = web.Load(modifiedUrl);
 
             var products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".abs-layout-product-gallery");
 
             foreach (var productNode in productNodes)
             {
-                var productId = productNode.QuerySelector("abs-catalog-index").ToString();
+                var productIdNode = productNode.QuerySelector(".abs-catalog-index");
                 var productNameNode = productNode.QuerySelector(".abs-product-name");
-                var priceElement = productNode.QuerySelector(".abs-item-price-amount");
+                var priceElementNode = productNode.QuerySelector(".abs-item-price-amount");
 
                 var productName = productNameNode.InnerText.Trim();
-                var cleanPrice = priceElement != null ? System.Net.WebUtility.HtmlDecode(priceElement.InnerText).Replace(" zł", "").Replace(",", ".").Trim() : "Price not found";
+                var cleanPrice = priceElementNode != null ? priceElementNode.InnerText
+                .Replace("zł", "")
+                .Replace("brutto", "")
+                .Replace(" ", "")
+                .Replace("\u00A0", "") 
+                .Replace(",", ".")
+                .Trim() : "Price not found";
 
                 decimal newPrice;
                 bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
 
                 var newProduct = new Product();
-                newProduct.IdProduct = productId;
-                newProduct.Name = productName;
+                newProduct.IdProduct = productIdNode.InnerText.Trim();
+                newProduct.Name = productNameNode.InnerText.Trim();
                 newProduct.Price = newPrice;
 
                 products.Add(newProduct);

@@ -25,6 +25,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new DeltaOpticalStrategy();
                 }
+                case ("Szuster"):
+                {
+                    return new SzusterStrategy();
+                }
                 default:
                     return null;
             }

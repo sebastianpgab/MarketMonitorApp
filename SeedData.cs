@@ -73,6 +73,59 @@ public class SeedData
                         }
                     }
 
+                },
+                new Distributor
+                {
+                    Name = "Szuster",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Blaser",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/blaser"
+                        },
+                        new Category
+                        {
+                            Name ="RWS",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/rws"
+                        },
+                        new Category
+                        {
+                            Name ="Mauser",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/mauser"
+                        },
+                        new Category
+                        {
+                            Name ="Sauer",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/sauer"
+                        },
+                        new Category
+                        {
+                            Name ="Sig-Sauer",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/sig-sauer"
+                        },
+                        new Category
+                        {
+                            Name ="Zeiss",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/zeiss"
+                        },
+                        new Category
+                        {
+                            Name ="Geco",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/geco"
+                        },
+                        new Category
+                        {
+                            Name ="Hausken",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/hausken"
+                        },
+                        new Category
+                        {
+                            Name ="Rottweill",
+                            LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/rottweill"
+                        }
+                    }
+
                 }
 
             };

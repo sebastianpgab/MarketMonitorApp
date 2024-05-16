@@ -20,20 +20,20 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             foreach (var productNode in productNodes)
             {
-                var productId = productNode.GetAttributeValue("data-product-id", string.Empty);
-                var productNameNode = productNode.QuerySelector(".product_name");
-                var priceElement = productNode.QuerySelector(".price nowrap");
+                var productId = productNode.QuerySelector(".image a").GetAttributeValue("href", string.Empty);
+                var productName = productNode.QuerySelector(".name");
+                var priceValue = productNode.QuerySelector(".price");
 
-                var productName = productNameNode.InnerText.Trim();
-                var price = priceElement.InnerText.Trim();
+                var productNameValue = productName.InnerText.Trim();
+                var price = priceValue.InnerText.Trim();
 
                 decimal newPrice;
                 string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
                 bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
 
                 var newProduct = new Product();
-                newProduct.IdProduct = productId;
-                newProduct.Name = productName;
+                newProduct.IdProduct = CutUrl(productId);
+                newProduct.Name = productNameValue;
                 newProduct.Price = newPrice;
 
                 products.Add(newProduct);
@@ -66,7 +66,20 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return lastPageNumber;
         }
 
+        private string CutUrl(string url)
+        {
+            string pattern = @"manufacturer/(.+)\.html";
+            Match match = Regex.Match(url, pattern);
 
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
 
     }
 }

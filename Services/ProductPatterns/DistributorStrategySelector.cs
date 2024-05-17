@@ -29,6 +29,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new SzusterStrategy();
                 }
+                case ("Knieja"):
+                {
+                    return new KniejaStrategy();
+                }
                 default:
                     return null;
             }

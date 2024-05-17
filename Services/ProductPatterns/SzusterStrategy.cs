@@ -52,7 +52,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             int lastPageNumber = 1;
 
-            if (1>0)
+            if (paginationLinkHref != string.Empty)
             {
                 var parts = paginationLinkHref.Split('/');
                 var lastPart = parts.Last(); 

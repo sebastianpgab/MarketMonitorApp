@@ -126,7 +126,46 @@ public class SeedData
                         }
                     }
 
-                }
+                },
+                 new Distributor
+                {
+                    Name = "Knieja",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Browning",
+                            LinkToCategory = "https://www.knieja.com.pl/marki/1-browning?page="
+                        },
+                        new Category
+                        {
+                            Name ="GRS",
+                            LinkToCategory = "https://www.knieja.com.pl/marki/7-grs?page="
+                        },
+                        new Category
+                        {
+                            Name ="Guide",
+                            LinkToCategory = "https://www.knieja.com.pl/marki/10-guide-sensmart?page="
+                        },
+                        new Category
+                        {
+                            Name ="Meopta",
+                            LinkToCategory = "https://www.knieja.com.pl/marki/3-meopta?page="
+                        },
+                        new Category
+                        {
+                            Name ="Norma",
+                            LinkToCategory = "https://www.knieja.com.pl/marki/4-norma?page="
+                        },
+                        new Category
+                        {
+                            Name ="Winchester",
+                            LinkToCategory = "https://www.knieja.com.pl/marki/2-winchester?page="
+                        },
+
+                    }
+
+                },
 
             };
 

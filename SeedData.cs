@@ -163,7 +163,75 @@ public class SeedData
                             LinkToCategory = "https://www.knieja.com.pl/marki/2-winchester?page="
                         },
 
-                    }
+                    },
+                },
+                 new Distributor
+                {
+                    Name = "Hubertus Pro",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Haenel",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/haenel/"
+                        },
+                        new Category
+                        {
+                            Name ="Nightforce",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/nightforce/"
+                        },
+                        new Category
+                        {
+                            Name ="Savage",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/savage/"
+                        },
+                        new Category
+                        {
+                            Name ="Merkel",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/merkel/"
+                        },
+                        new Category
+                        {
+                            Name ="Fabarm",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/fabarm/"
+                        },
+                        new Category
+                        {
+                            Name ="Aimpoint",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/aimpoint-ab/"
+                        },
+                        new Category
+                        {
+                            Name ="Hornady",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/hornady/"
+                        },
+                        new Category
+                        {
+                            Name ="Steyr-Mannlicher",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/steyr-mannlicher/"
+                        },
+                        new Category
+                        {
+                            Name ="Leica",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/leica-camera-ag/"
+                        },
+                        new Category
+                        {
+                            Name ="Recknagel",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/recknagel/"
+                        },
+                        new Category
+                        {
+                            Name ="Haenel",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/haenel/"
+                        },
+                        new Category
+                        {
+                            Name ="Niggeloh",
+                            LinkToCategory = "https://sklep.hubertusprohunting.pl/manufacturer/niggeloh/"
+                        },
+
+                    },
 
                 },
 

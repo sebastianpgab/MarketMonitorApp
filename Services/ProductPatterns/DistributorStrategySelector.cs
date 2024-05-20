@@ -33,6 +33,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new KniejaStrategy();
                 }
+                case ("Hubertus Pro"):
+                {
+                    return new HubertusProStrategy();
+                }
                 default:
                     return null;
             }

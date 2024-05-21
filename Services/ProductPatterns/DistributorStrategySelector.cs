@@ -37,6 +37,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new HubertusProStrategy();
                 }
+                case ("Kaliber"):
+                {
+                    return new KaliberStrategy();
+                }
                 default:
                     return null;
             }

@@ -234,6 +234,44 @@ public class SeedData
                     },
 
                 },
+                 new Distributor
+                {
+                    Name = "Kaliber",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Tikka",
+                            LinkToCategory = "https://kaliber.pl/39_tikka?p="
+                        },
+                        new Category
+                        {
+                            Name ="Steiner",
+                            LinkToCategory = "https://kaliber.pl/80_steiner?p="
+                        },
+                        new Category
+                        {
+                            Name ="Smithwesson",
+                            LinkToCategory = "https://kaliber.pl/2_smithwesson?p="
+                        },
+                        new Category
+                        {
+                            Name ="Sako",
+                            LinkToCategory = "https://kaliber.pl/10_sako?p="
+                        },
+                        new Category
+                        {
+                            Name ="Glock",
+                            LinkToCategory = "https://kaliber.pl/68_glock?p="
+                        },
+                        new Category
+                        {
+                            Name ="Beretta",
+                            LinkToCategory = "https://kaliber.pl/5_beretta?p="
+                        },
+
+                    },
+                },
 
             };
 

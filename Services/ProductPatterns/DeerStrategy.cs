@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 
 namespace MarketMonitorApp.Services.ProductPatterns
 {
-    public class KaliberStrategy : IDistributorStrategy
+    public class DeerStrategy : IDistributorStrategy
     {
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
             var document = web.Load(baseUrl);
-            var paginationLinks = document.QuerySelectorAll(".pagination li a").ToList();
+            var paginationLinks = document.QuerySelectorAll(".page-numbers li a").ToList();
 
             if (paginationLinks.Count == 0)
             {
@@ -33,20 +33,20 @@ namespace MarketMonitorApp.Services.ProductPatterns
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
             var web = new HtmlWeb();
-            var pageUrl = $"{baseUrl}{currentPage}";
+            var pageUrl = UpdatePageNumberInLink(baseUrl, currentPage);
             var document = web.Load(pageUrl);
 
             var products = new List<Product>();
-            var productNodes = document.DocumentNode.QuerySelectorAll(".ajax_block_product");
+            var productNodes = document.DocumentNode.QuerySelectorAll(".product-grid-item");
 
             foreach (var productNode in productNodes)
             {
-                var productId = productNode.QuerySelector(".add_to_compare").GetAttributeValue("data-id-product", string.Empty);
-                var productNameNode = productNode.QuerySelector(".product-name");
-                var priceElement = productNode.QuerySelector(".price");
+                var productId = productNode.GetAttributeValue("data-id", string.Empty);
+                var productNameNode = productNode.QuerySelector(".wd-entities-title");
+                var priceElement = productNode.QuerySelector(".price em");
 
                 var productName = productNameNode.InnerText.Trim();
-                var price = priceElement != null ? priceElement.InnerText.Trim() : "0";
+                var price = priceElement.InnerText.Trim();
 
                 decimal newPrice;
                 string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
@@ -62,6 +62,16 @@ namespace MarketMonitorApp.Services.ProductPatterns
             }
 
             return products;
+        }
+
+        private string UpdatePageNumberInLink(string baseUrl, int currentPage)
+        {
+            var segments = baseUrl.Split('/');
+            if (segments.Length > 4)
+            {
+                segments[4] = currentPage.ToString();
+            }
+            return String.Join("/", segments);
         }
     }
 }

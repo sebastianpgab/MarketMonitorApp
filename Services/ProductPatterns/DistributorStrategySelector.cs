@@ -41,6 +41,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new KaliberStrategy();
                 }
+                case ("Deer"):
+                {
+                    return new DeerStrategy();
+                }
                 default:
                     return null;
             }

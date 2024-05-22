@@ -272,6 +272,19 @@ public class SeedData
 
                     },
                 },
+                 new Distributor
+                {
+                    Name = "Deer",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Schultz & Larsen",
+                            LinkToCategory = "https://www.deeropole.pl/page/1/?s=Schultz+%26+Larsen&post_type=product&product_cat=0"
+                        }
+                    }
+
+                },
 
             };
 

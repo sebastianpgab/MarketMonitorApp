@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class DeerStrategy : IDistributorStrategy
     {
+        //Logika do poprawy
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
             var document = web.Load(baseUrl);
@@ -42,26 +44,74 @@ namespace MarketMonitorApp.Services.ProductPatterns
             foreach (var productNode in productNodes)
             {
                 var productId = productNode.GetAttributeValue("data-id", string.Empty);
-                var productNameNode = productNode.QuerySelector(".wd-entities-title");
-                var priceElement = productNode.QuerySelector(".price em");
+                var productName = productNode.QuerySelector(".wd-entities-title").InnerText.Trim();
+                var priceElement = productNode.QuerySelector(".price")?.InnerText.Trim();
 
-                var productName = productNameNode.InnerText.Trim();
-                var price = priceElement.InnerText.Trim();
+                if (string.IsNullOrWhiteSpace(priceElement))
+                {
+                    continue; 
+                }
 
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
-
-                var newProduct = new Product();
-                newProduct.IdProduct = productId;
-                newProduct.Name = productName;
-                newProduct.Price = newPrice;
-
-                products.Add(newProduct);
-
+                var prices = DividePrice(priceElement);
+                if (prices.Count > 1)
+                {
+                    AddProductsForMultiplePrices(products, productId, productName, prices);
+                }
+                else if (prices.Count == 1)
+                {
+                    AddProduct(products, productId, productName, prices.First());
+                }
             }
 
             return products;
+        }
+
+        private void AddProductsForMultiplePrices(List<Product> products, string productId, string productName, List<decimal> prices)
+        {
+            int indexAdder = 0;
+            foreach (var price in prices)
+            {
+                var newProduct = new Product
+                {
+                    IdProduct = productId + indexAdder,
+                    Name = productName,
+                    Price = price
+                };
+                products.Add(newProduct);
+                indexAdder++;
+            }
+        }
+
+        private void AddProduct(List<Product> products, string productId, string productName, decimal price)
+        {
+            var newProduct = new Product
+            {
+                IdProduct = productId,
+                Name = productName,
+                Price = price
+            };
+            products.Add(newProduct);
+        }
+
+        public List<decimal> DividePrice(string price)
+        {
+            var prices = price.Split('–');
+            var cleanedPrices = new List<decimal>();
+
+            foreach (var pr in prices)
+            {
+                var cleanPrice = CleanPrice(pr);
+                if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+                {
+                    cleanedPrices.Add(newPrice);
+                }
+            }
+            return cleanedPrices;
+        }
+
+        private string CleanPrice(string price)
+        {
+            return Regex.Replace(price, @"\s+|zł|&nbsp;|<[^>]+>", "").Replace(",", ".");
         }
 
         private string UpdatePageNumberInLink(string baseUrl, int currentPage)
@@ -71,7 +121,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 segments[4] = currentPage.ToString();
             }
-            return String.Join("/", segments);
+            return string.Join("/", segments);
         }
+
     }
 }

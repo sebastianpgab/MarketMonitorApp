@@ -285,6 +285,59 @@ public class SeedData
                     }
 
                 },
+                 new Distributor
+                {
+                    Name = "Incorsa",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Anschutz",
+                            LinkToCategory = "https://sklep.incorsa.pl/anschutz?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Ase-Utra",
+                            LinkToCategory = "https://sklep.incorsa.pl/ase-utra?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Ballistol",
+                            LinkToCategory = "https://sklep.incorsa.pl/ballistol?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Benelli",
+                            LinkToCategory = "https://sklep.incorsa.pl/benelli?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Berger",
+                            LinkToCategory = "https://sklep.incorsa.pl/berger?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Bergara",
+                            LinkToCategory = "https://sklep.incorsa.pl/bergara?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Fair",
+                            LinkToCategory = "https://sklep.incorsa.pl/fair?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Lapua Gmbh",
+                            LinkToCategory = "https://sklep.incorsa.pl/lapua-gmbh?page=1&elems_per_page=10"
+                        },
+                        new Category
+                        {
+                            Name ="Lapua Nammo",
+                            LinkToCategory = "https://sklep.incorsa.pl/nammo-lapua?page=1&elems_per_page=10"
+                        }
+                    }
+
+                },
 
             };
 

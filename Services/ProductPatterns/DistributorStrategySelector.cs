@@ -45,6 +45,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new DeerStrategy();
                 }
+                case ("Incorsa"):
+                {
+                    return new IncorsaStrategy();
+                }
                 default:
                     return null;
             }

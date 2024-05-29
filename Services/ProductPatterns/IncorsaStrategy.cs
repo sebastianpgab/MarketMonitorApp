@@ -10,7 +10,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
     {
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
-
             var document = web.Load(baseUrl);
             var paginationLinks = document.DocumentNode.QuerySelectorAll(".pagination li a")
                                                         .Where(a => int.TryParse(a.InnerText.Trim(), out _))

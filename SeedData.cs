@@ -338,6 +338,29 @@ public class SeedData
                     }
 
                 },
+                 new Distributor
+                {
+                    Name = "Malik Malik",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="ATA Arms",
+                            LinkToCategory = "https://malik-malik.pl/producenci/produkty-ata-arms?start="
+                        },
+                        new Category
+                        {
+                            Name ="Sabatti",
+                            LinkToCategory = "https://malik-malik.pl/producenci/produkty-sabatti?start="
+                        },
+                        new Category
+                        {
+                            Name ="Retay",
+                            LinkToCategory = "https://malik-malik.pl/producenci/produkty-retay?start="
+                        }
+                    }
+
+                },
 
             };
 

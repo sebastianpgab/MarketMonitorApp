@@ -49,6 +49,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new IncorsaStrategy();
                 }
+                case ("Malik Malik"):
+                {
+                    return new MalikMalikStrategy();
+                }
                 default:
                     return null;
             }

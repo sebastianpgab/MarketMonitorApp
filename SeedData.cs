@@ -359,7 +359,19 @@ public class SeedData
                             LinkToCategory = "https://malik-malik.pl/producenci/produkty-retay?start="
                         }
                     }
+                },
+                 new Distributor
+                {
+                    Name = "RParms",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Ruger",
+                            LinkToCategory = "https://rparms.pl/szukaj?controller=search&poscats=0&s=Ruger&page="
+                        },
 
+                    }
                 },
 
             };

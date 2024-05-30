@@ -53,6 +53,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     return new MalikMalikStrategy();
                 }
+                case ("RParms"):
+                {
+                    return new RParmsStrategy();
+                }
                 default:
                     return null;
             }

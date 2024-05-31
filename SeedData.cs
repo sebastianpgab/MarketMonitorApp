@@ -23,12 +23,12 @@ public class SeedData
                     Name = "Twoja Bron",
                     Categories = new List<Category>
                     {
-                        new Category 
-                        { 
+                        new Category
+                        {
                         Name = "Akcesoria",
                         LinkToCategory = "https://twojabron.pl/kategoria/akcesoria"
                         },
-                        new Category 
+                        new Category
                         { Name = "Noktowizja",
                           LinkToCategory = "https://twojabron.pl/kategoria/noktowizja"
                         }
@@ -39,12 +39,12 @@ public class SeedData
                     Name = "Delta Optical",
                     Categories = new List<Category>
                     {
-                        new Category 
+                        new Category
                         {
-                            Name = "Lornetki", 
+                            Name = "Lornetki",
                             LinkToCategory = "https://deltaoptical.pl/lornetki"
                         },
-                        new Category 
+                        new Category
                         {
                            Name = "Termowizory",
                            LinkToCategory = "https://deltaoptical.pl/termowizory"
@@ -60,7 +60,7 @@ public class SeedData
                            LinkToCategory = "https://deltaoptical.pl/lunety-obserwacyjne"
                         }
                     }
-                }, 
+                },
                 new Distributor
                 {
                     Name = "Hubertus Białystok",
@@ -373,18 +373,31 @@ public class SeedData
 
                     }
                 },
+                  new Distributor
+                {
+                    Name = "Kolba",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Hikmikro",
+                            LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=hikmicro"
+                        },
+
+                    }
+                },
 
             };
 
             _marketMonitorDbContext.Distributors.AddRange(distributors);
-            _marketMonitorDbContext.SaveChanges(); 
+            _marketMonitorDbContext.SaveChanges();
 
             var actualizations = new List<Actualization>
             {
                 new Actualization
                 {
                     IsEntered = true,
-                    DistributorId = distributors[0].Id, 
+                    DistributorId = distributors[0].Id,
                     Products = new List<Product>
                     {
                         new Product { Name = "Sztucer Blaser R8", IdProduct = "001", Price = 665},
@@ -394,7 +407,7 @@ public class SeedData
                 new Actualization
                 {
                     IsEntered = true,
-                    DistributorId = distributors[1].Id,  
+                    DistributorId = distributors[1].Id,
                     Products = new List<Product>
                     {
                         new Product { Name = "Aschutz 1470 sztucer kal 30-06", IdProduct = "001", Price = 23323},
@@ -404,7 +417,7 @@ public class SeedData
             };
 
             _marketMonitorDbContext.Actualizations.AddRange(actualizations);
-            _marketMonitorDbContext.SaveChanges(); 
+            _marketMonitorDbContext.SaveChanges();
         }
     }
 }

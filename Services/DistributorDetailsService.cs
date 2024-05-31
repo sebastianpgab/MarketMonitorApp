@@ -111,7 +111,7 @@ namespace MarketMonitorApp.Services
             var distributorName = actualization.Distributor.Name;
 
 
-            string filePath = @"C:\Users\damia\Desktop\x";
+            string filePath = @"C:\Users\damia\Desktop\xx";
 
             DateTime currentData = DateTime.Now;
 
@@ -151,8 +151,6 @@ namespace MarketMonitorApp.Services
 
             return new List<Product>(); // Zwraca pustą listę zamiast `null`
         }
-
-
 
     }
 }

@@ -14,49 +14,53 @@ namespace MarketMonitorApp.Services.ProductPatterns
             switch (distributor.Name)
             {
                 case ("Twoja Bron"):
-                {
-                    return new TwojaBronStrategy();
-                }
+                    {
+                        return new TwojaBronStrategy();
+                    }
                 case ("Hubertus Białystok"):
-                {
-                    return new HubertusBialystokStrategy();
-                }
+                    {
+                        return new HubertusBialystokStrategy();
+                    }
                 case ("Delta Optical"):
-                {
-                    return new DeltaOpticalStrategy();
-                }
+                    {
+                        return new DeltaOpticalStrategy();
+                    }
                 case ("Szuster"):
-                {
-                    return new SzusterStrategy();
-                }
+                    {
+                        return new SzusterStrategy();
+                    }
                 case ("Knieja"):
-                {
-                    return new KniejaStrategy();
-                }
+                    {
+                        return new KniejaStrategy();
+                    }
                 case ("Hubertus Pro"):
-                {
-                    return new HubertusProStrategy();
-                }
+                    {
+                        return new HubertusProStrategy();
+                    }
                 case ("Kaliber"):
-                {
-                    return new KaliberStrategy();
-                }
+                    {
+                        return new KaliberStrategy();
+                    }
                 case ("Deer"):
-                {
-                    return new DeerStrategy();
-                }
+                    {
+                        return new DeerStrategy();
+                    }
                 case ("Incorsa"):
-                {
-                    return new IncorsaStrategy();
-                }
+                    {
+                        return new IncorsaStrategy();
+                    }
                 case ("Malik Malik"):
-                {
-                    return new MalikMalikStrategy();
-                }
+                    {
+                        return new MalikMalikStrategy();
+                    }
                 case ("RParms"):
-                {
-                    return new RParmsStrategy();
-                }
+                    {
+                        return new RParmsStrategy();
+                    }
+                case ("Kolba"):
+                    {
+                        return new KolbaStrategy();
+                    }
                 default:
                     return null;
             }

@@ -13,10 +13,25 @@ namespace MarketMonitorApp.Services.ProductPatterns
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
             var buttonText = FindButtonWithText(web, baseUrl);
-            var maxNumber = FindMaxNumberInButtonText(buttonText);
+            var maxNumber = double.Parse(FindMaxNumberInButtonText(buttonText));
+            var numberOfElementsPerPage = 36;
 
-            return 4;
+            if (maxNumber > numberOfElementsPerPage)
+            {
+                maxNumber += numberOfElementsPerPage;
+            }
+
+            double result = maxNumber / numberOfElementsPerPage;
+
+            if (result % 1 > 0)
+            {
+                int pages = (int)Math.Ceiling(result);
+                return pages;
+            }
+
+            return (int)result;
         }
+
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
             var web = new HtmlWeb();
@@ -89,20 +104,23 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         public string FindMaxNumberInButtonText(string buttonText)
         {
-            int openParenIndex = buttonText.IndexOf("(");
-            int closeParenIndex = buttonText.IndexOf(")");
-
-            if (openParenIndex != -1 && closeParenIndex != -1 && closeParenIndex > openParenIndex)
+            if(buttonText != null)
             {
-                int substringLength = closeParenIndex - openParenIndex - 1;
-                string numbersSubstring = buttonText.Substring(openParenIndex + 1, substringLength).ToLower();
+                int openParenIndex = buttonText.IndexOf("(");
+                int closeParenIndex = buttonText.IndexOf(")");
 
-                var numberParts = numbersSubstring.Split('z');
+                if (openParenIndex != -1 && closeParenIndex != -1 && closeParenIndex > openParenIndex)
+                {
+                    int substringLength = closeParenIndex - openParenIndex - 1;
+                    string numbersSubstring = buttonText.Substring(openParenIndex + 1, substringLength).ToLower();
 
-                var lastPart = numberParts.Last().Trim();
-                return lastPart;
+                    var numberParts = numbersSubstring.Split('z');
+
+                    var lastPart = numberParts.Last().Trim();
+                    return lastPart;
+                }
             }
-            return null;
+            return "1";
         }
     }
 

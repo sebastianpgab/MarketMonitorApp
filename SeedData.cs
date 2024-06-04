@@ -383,7 +383,21 @@ public class SeedData
                             Name ="Hikmikro",
                             LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=hikmicro"
                         },
-
+                        new Category
+                        {
+                            Name ="RealHunter",
+                            LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=realhunter"
+                        },
+                        new Category
+                        {
+                            Name ="Primos",
+                            LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=primos"
+                        },
+                        new Category
+                        {
+                            Name ="Vortex",
+                            LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=vortex"
+                        },
                     }
                 },
 

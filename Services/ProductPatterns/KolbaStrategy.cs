@@ -39,22 +39,55 @@ namespace MarketMonitorApp.Services.ProductPatterns
             var document = web.Load(pageUrl);
 
             var products = new List<Product>();
-            var productNodes = document.DocumentNode.QuerySelectorAll(".product__name");
-            int i = 0;
-            foreach (var productNode in productNodes)
+
+            var productName = document.DocumentNode.QuerySelectorAll(".product__name");
+            var productPrice = document.DocumentNode.QuerySelectorAll(".product__price");
+
+            var productsNode = productName.Zip(productPrice, (prodName, prodPrice) => new
+            { ProdName = prodName, 
+              ProdPrice = prodPrice 
+            });
+
+            foreach (var productNode in productsNode)
             {
+                var linkHtml = productNode.ProdName.QuerySelector("a").GetAttributeValue("href", string.Empty);
+                var productId = GetProductId(linkHtml);
+                var productNameNode = productNode.ProdName.QuerySelector(".product__name").InnerText.Trim();
+                var productPriceNode = productNode.ProdPrice.QuerySelector(".product__price").InnerText.Trim();
+
+                decimal newPrice;
+                string cleanPrice = Regex.Replace(productPriceNode, @"\s+|zł", "").Replace(",", ".");
+                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
 
                 var newProduct = new Product();
-                newProduct.IdProduct = i++.ToString();
-                newProduct.Name = "";
-                newProduct.Price = 20;
+                newProduct.IdProduct = productId;
+                newProduct.Name = productNameNode;
+                newProduct.Price = newPrice;
 
                 products.Add(newProduct);
 
             }
-
             return products;
         }
+
+        private string GetProductId(string link)
+        {
+            if (string.IsNullOrEmpty(link))
+            {
+                return null;
+            }
+
+            var lastSlashIndex = link.LastIndexOf('/');
+            var commaIndex = link.IndexOf(',');
+
+            if (lastSlashIndex == -1 || commaIndex == -1 || commaIndex <= lastSlashIndex)
+            {
+                return null;
+            }
+
+            return link.Substring(lastSlashIndex + 1, commaIndex - lastSlashIndex - 1);
+        }
+
 
         private string UpdatePageNumberInLink(string url, int currentPage)
         {

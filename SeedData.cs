@@ -400,6 +400,23 @@ public class SeedData
                         },
                     }
                 },
+                 new Distributor
+                {
+                    Name = "TaniePolowanie",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="PARD",
+                            LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/pard/"
+                        },
+                        new Category
+                        {
+                            Name ="Senopex",
+                            LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/senopex/"
+                        },
+                    }
+                },
 
             };
 

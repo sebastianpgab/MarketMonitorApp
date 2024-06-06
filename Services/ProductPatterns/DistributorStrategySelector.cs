@@ -61,6 +61,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     {
                         return new KolbaStrategy();
                     }
+                case ("TaniePolowanie"):
+                    {
+                        return new TaniePolowanieStrategy();
+                    }
                 default:
                     return null;
             }

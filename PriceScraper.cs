@@ -3,6 +3,7 @@ using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductPatterns;
 using MarketMonitorApp.Services.ProductsStrategy;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -39,7 +40,14 @@ namespace MarketMonitorApp
                 currentPage++;
             }
 
-            return allProducts;
+            return RemoveDuplications(allProducts);
+        }
+
+        private List<Product> RemoveDuplications(List<Product> products)
+        {
+            return products.GroupBy(p => p.IdProduct)
+                               .Select(g => g.First())
+                               .ToList();
         }
 
 

@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class TaniePolowanieStrategy : IDistributorStrategy
-
     {
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
@@ -36,8 +35,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             var web = new HtmlWeb();
             var pageUrl = $"{baseUrl}{currentPage}";
             var document = web.Load(pageUrl);
-
-            var products = new List<Product>();
+            List<Product> products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".product");
 
             foreach (var productNode in productNodes)
@@ -56,14 +54,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 newProduct.Name = productName;
                 newProduct.Price = newPrice;
 
-                //tu jest źle
-                if (!products.Any(p => p.IdProduct == newProduct.IdProduct))
-                {
-                    products.Add(newProduct);
-                }
+                products.Add(newProduct);
 
             }
-
             return products;
         }
     }

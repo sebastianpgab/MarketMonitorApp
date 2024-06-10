@@ -65,6 +65,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     {
                         return new TaniePolowanieStrategy();
                     }
+                case ("Tamed"):
+                    {
+                        return new TamedStrategy();
+                    }
                 default:
                     return null;
             }

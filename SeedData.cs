@@ -417,6 +417,23 @@ public class SeedData
                         },
                     }
                 },
+                 new Distributor
+                {
+                    Name = "Tamed",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Infiray",
+                            LinkToCategory = "https://tamed.pl/index.php?fc=module&module=leoproductsearch&controller=productsearch&leoproductsearch_static_token=66cc3dc6468290af5fe3ebc958502f6b&search_query=infiray&page="
+                        },
+                        new Category
+                        {
+                            Name ="X-Hog",
+                            LinkToCategory = "https://tamed.pl/index.php?fc=module&module=leoproductsearch&controller=productsearch&leoproductsearch_static_token=66cc3dc6468290af5fe3ebc958502f6b&cate=&search_query=x-hog+iluminator&page="
+                        },
+                    }
+                },
 
             };
 

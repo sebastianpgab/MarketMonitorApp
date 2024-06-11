@@ -14,21 +14,14 @@ namespace MarketMonitorApp.Services.ProductPatterns
             var document = web.Load(baseUrl);
             var paginationLinks = document.QuerySelectorAll(".page-list li a").ToList();
 
-            if (paginationLinks.Count == 0)
+            if (!paginationLinks.Any())
             {
                 return 1;
             }
 
-            var lastPageString = paginationLinks[paginationLinks.Count - 2].InnerText.Trim();
+            var lastPageString = paginationLinks[^2].InnerText.Trim();
 
-            if (int.TryParse(lastPageString, out int lastPageNumber))
-            {
-                return lastPageNumber;
-            }
-            else
-            {
-                return 1;
-            }
+            return int.TryParse(lastPageString, out int lastPageNumber) ? lastPageNumber : 1;
         }
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
@@ -44,10 +37,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 var productId = productNode.QuerySelector(".leo-more-info").GetAttributeValue("data-idproduct", string.Empty);
                 var productNameNode = productNode.QuerySelector(".product-title a").GetAttributeValue("href", string.Empty);
-                var productName = TakeProductName(productNameNode);
-                var priceElement = productNode.QuerySelector(".price em");
-
-                var price = priceElement.InnerText.Trim();
+                var productName = ExtractProductNameFromLink(productNameNode);
+                var price = productNode.QuerySelector(".price span[itemprop='price']").InnerText.Trim();
 
                 decimal newPrice;
                 string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
@@ -63,18 +54,15 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return products;
         }
 
-        private string TakeProductName(string link)
+        private string ExtractProductNameFromLink(string link)
         {
-            if (!string.IsNullOrEmpty(link))
+            if (string.IsNullOrEmpty(link))
             {
-                var linkElements = link.Split('/');
-                if (linkElements.Length > 0)
-                {
-                    var lastElement = linkElements[^1].Replace("-", " ").Trim();
-                    return lastElement;
-                }
+                return string.Empty;
             }
-            return null;
+
+            var linkSegments = link.Split('/');
+            return linkSegments.Length > 0 ? linkSegments[^1].Replace("-", " ").Trim() : string.Empty;
         }
     }
 }

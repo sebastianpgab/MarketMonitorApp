@@ -20,20 +20,18 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             foreach (var productNode in productNodes)
             {
-                var productId = productNode.QuerySelector(".image a").GetAttributeValue("href", string.Empty);
-                var productName = productNode.QuerySelector(".name");
-                var priceValue = productNode.QuerySelector(".price");
-
-                var productNameValue = productName.InnerText.Trim();
-                var price = priceValue.InnerText.Trim();
+                var product_page_url = productNode.QuerySelector(".name a").GetAttributeValue("href", string.Empty);
+                var productId = Regex.Replace(product_page_url, "^/manufacturer/|\\.html$", "");
+                var productName = ExtractProductNameFromLink(product_page_url);
+                var price = productNode.QuerySelector(".price").InnerText.Trim();
 
                 decimal newPrice;
                 string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
                 bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
 
                 var newProduct = new Product();
-                newProduct.IdProduct = CutUrl(productId);
-                newProduct.Name = productNameValue;
+                newProduct.IdProduct = productId;
+                newProduct.Name = productName;
                 newProduct.Price = newPrice;
 
                 products.Add(newProduct);
@@ -48,37 +46,38 @@ namespace MarketMonitorApp.Services.ProductPatterns
             var document = web.Load(baseUrl);
             var paginationLink = document.DocumentNode.QuerySelectorAll(".pagination li a").LastOrDefault();
 
-            var paginationLinkHref = paginationLink.GetAttributeValue("href", string.Empty);
-
-            int lastPageNumber = 1;
-
-            if (paginationLinkHref != string.Empty)
+            if (paginationLink != null)
             {
-                var parts = paginationLinkHref.Split('/');
-                var lastPart = parts.Last(); 
+                var paginationLinkHref = paginationLink.GetAttributeValue("href", string.Empty);
+                int lastPageNumber = ExtractPageNumberFromHref(paginationLinkHref);
 
-                if (int.TryParse(lastPart, out int pageNumber))
-                {
-                    lastPageNumber = pageNumber;
-                }
+                return lastPageNumber;
             }
 
-            return lastPageNumber;
+            return 1; // Brak paginacji, więc domyślnie 1
         }
 
-        private string CutUrl(string url)
+        private int ExtractPageNumberFromHref(string href)
         {
-            string pattern = @"manufacturer/(.+)\.html";
-            Match match = Regex.Match(url, pattern);
+            var parts = href.Split('/');
+            var lastPart = parts.Last();
 
-            if (match.Success)
+            if (int.TryParse(lastPart, out int pageNumber))
             {
-                return match.Groups[1].Value;
+                return pageNumber;
             }
-            else
+
+            return 1;
+        }
+
+        private string ExtractProductNameFromLink(string link)
+        {
+            if (string.IsNullOrEmpty(link))
             {
                 return string.Empty;
             }
+            var linkSegments = link.Split('/');
+            return linkSegments.Length > 0 ? linkSegments[^1].Replace("-", " ").Replace(".html", "").Trim() : string.Empty;
         }
 
     }

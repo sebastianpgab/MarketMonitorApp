@@ -11,13 +11,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
     {
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var web = new HtmlWeb(); //34
-
+            var web = new HtmlWeb();
             string pattern = @"(?<=search/\d+,)\d+(?=,default-asc)";
             string replacement = currentPage.ToString();
             string modifiedUrl = Regex.Replace(baseUrl, pattern, replacement);
-
-
             var document = web.Load(modifiedUrl);
 
             var products = new List<Product>();
@@ -47,9 +44,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 newProduct.Price = newPrice;
 
                 products.Add(newProduct);
-
             }
-
             return products;
         }
 
@@ -67,7 +62,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 lastPageNumber = int.Parse(lastPageNumberString);
             }
-
 
 
             return lastPageNumber;

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketMonitorApp", "MarketMonitorApp.csproj", "{DE1D46B0-8C24-453D-88E0-5D06FEB8B837}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketMonitorTests", "..\MarketMonitorTests\MarketMonitorTests.csproj", "{88FDDF0A-2419-48AE-AC10-053BA81F66C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DE1D46B0-8C24-453D-88E0-5D06FEB8B837}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE1D46B0-8C24-453D-88E0-5D06FEB8B837}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE1D46B0-8C24-453D-88E0-5D06FEB8B837}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88FDDF0A-2419-48AE-AC10-053BA81F66C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88FDDF0A-2419-48AE-AC10-053BA81F66C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88FDDF0A-2419-48AE-AC10-053BA81F66C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88FDDF0A-2419-48AE-AC10-053BA81F66C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -40,11 +40,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 case ("Kaliber"):
                     {
                         return new KaliberStrategy();
-                    }
-                case ("Deer"):
-                    {
-                        return new DeerStrategy();
-                    }
+                    } 
                 case ("Incorsa"):
                     {
                         return new IncorsaStrategy();

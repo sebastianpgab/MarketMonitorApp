@@ -9,7 +9,7 @@
         foreach (var category in Model.Categories)
         {
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="SelectedOptions" value="@category.LinkToCategory" id="category-@category.Id">
+                <input class="form-check-input" type="checkbox" name="SelectedOptions" value="@category.LinkToCategory" id="category-@category.Id" onclick="toggleCheckboxes(this)">
                 <label class="form-check-label" for="category-@category.Id">
                     @category.Name
                 </label>
@@ -19,3 +19,16 @@
 
     <button type="submit" class="btn btn-primary mt-3">Pobierz zmiany cen</button>
 </form>
+
+@section Scripts {
+    <script>
+        function toggleCheckboxes(checkbox) {
+            var checkboxes = document.querySelectorAll('.form-check-input');
+            checkboxes.forEach(function (cb) {
+                if (cb !== checkbox) {
+                    cb.disabled = checkbox.checked;
+                }
+            });
+        }
+    </script>
+}

@@ -1,4 +1,5 @@
-﻿using MarketMonitorApp.Entities;
+﻿using HtmlAgilityPack;
+using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
 
 namespace MarketMonitorApp.Services.ProductPatterns
@@ -9,17 +10,22 @@ namespace MarketMonitorApp.Services.ProductPatterns
     }
     public class DistributorStrategySelector : IDistributorStrategySelector
     {
+        private readonly HtmlWeb _htmlWeb;
+        public DistributorStrategySelector(HtmlWeb htmlWeb)
+        {
+            _htmlWeb = htmlWeb;
+        }
         public IDistributorStrategy ChoseStrategy(Distributor distributor)
         {
             switch (distributor.Name)
             {
                 case ("Twoja Bron"):
                     {
-                        return new TwojaBronStrategy();
+                        return new TwojaBronStrategy(_htmlWeb);
                     }
                 case ("Hubertus Białystok"):
                     {
-                        return new HubertusBialystokStrategy();
+                        return new HubertusBialystokStrategy(_htmlWeb);
                     }
                 case ("Delta Optical"):
                     {
@@ -27,43 +33,43 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     }
                 case ("Szuster"):
                     {
-                        return new SzusterStrategy();
+                        return new SzusterStrategy(_htmlWeb);
                     }
                 case ("Knieja"):
                     {
-                        return new KniejaStrategy();
+                        return new KniejaStrategy(_htmlWeb);
                     }
                 case ("Hubertus Pro"):
                     {
-                        return new HubertusProStrategy();
+                        return new HubertusProStrategy(_htmlWeb);
                     }
                 case ("Kaliber"):
                     {
-                        return new KaliberStrategy();
+                        return new KaliberStrategy(_htmlWeb);
                     } 
                 case ("Incorsa"):
                     {
-                        return new IncorsaStrategy();
+                        return new IncorsaStrategy(_htmlWeb);
                     }
                 case ("Malik Malik"):
                     {
-                        return new MalikMalikStrategy();
+                        return new MalikMalikStrategy(_htmlWeb);
                     }
                 case ("RParms"):
                     {
-                        return new RParmsStrategy();
+                        return new RParmsStrategy(_htmlWeb);
                     }
                 case ("Kolba"):
                     {
-                        return new KolbaStrategy();
+                        return new KolbaStrategy(_htmlWeb);
                     }
                 case ("TaniePolowanie"):
                     {
-                        return new TaniePolowanieStrategy();
+                        return new TaniePolowanieStrategy(_htmlWeb);
                     }
                 case ("Tamed"):
                     {
-                        return new TamedStrategy();
+                        return new TamedStrategy(_htmlWeb);
                     }
                 default:
                     return null;

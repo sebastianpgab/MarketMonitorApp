@@ -10,6 +10,12 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class KolbaStrategy : IDistributorStrategy
     {
+        private readonly HtmlWeb _htmlWeb;
+
+        public KolbaStrategy(HtmlWeb htmlWeb)
+        {
+            _htmlWeb = htmlWeb;
+        }
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
             var buttonText = FindButtonWithText(web, baseUrl);
@@ -34,9 +40,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var web = new HtmlWeb();
             var pageUrl = UpdatePageNumberInLink(baseUrl, currentPage);
-            var document = web.Load(pageUrl);
+            var document = _htmlWeb.Load(pageUrl);
 
             var products = new List<Product>();
 

@@ -17,20 +17,21 @@ namespace MarketMonitorApp
     {
         private string BaseUrl;
         private readonly IDistributorStrategySelector _distributorStrategySelector;
+        private readonly HtmlWeb _htmlWeb;
 
-        public PriceScraper(IDistributorStrategySelector distributorStrategySelector)
+        public PriceScraper(IDistributorStrategySelector distributorStrategySelector, HtmlWeb htmlWeb)
         {
             _distributorStrategySelector = distributorStrategySelector;
+            _htmlWeb = htmlWeb;
         }
 
         public IEnumerable<Product> GetProducts(string baseUrl, Distributor distributor)
         {
             BaseUrl = baseUrl;
             var allProducts = new List<Product>();
-            HtmlWeb web = new HtmlWeb();
             int currentPage = 1;
             var strategy = _distributorStrategySelector.ChoseStrategy(distributor);
-            int lastPage = strategy.GetLastPageNumber(web, baseUrl);
+            int lastPage = strategy.GetLastPageNumber(_htmlWeb, baseUrl);
 
             while (currentPage <= lastPage)
             {

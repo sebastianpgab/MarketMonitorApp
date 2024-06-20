@@ -8,6 +8,12 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class IncorsaStrategy : IDistributorStrategy
     {
+        private readonly HtmlWeb _htmlWeb;
+
+        public IncorsaStrategy(HtmlWeb htmlWeb)
+        {
+            _htmlWeb = htmlWeb;
+        }
         public int GetLastPageNumber(HtmlWeb web, string baseUrl)
         {
             var document = web.Load(baseUrl);
@@ -39,13 +45,12 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         private HtmlDocument FetchHtmlDocument(string baseUrl, int currentPage)
         {
-            var web = new HtmlWeb();
             var pageUrl = baseUrl;
             if (currentPage != 1)
             {
                 pageUrl = ChangePageNumber(baseUrl, currentPage);
             }
-            return web.Load(pageUrl);
+            return _htmlWeb.Load(pageUrl);
         }
 
         private IEnumerable<Product> ParseProducts(HtmlDocument document)

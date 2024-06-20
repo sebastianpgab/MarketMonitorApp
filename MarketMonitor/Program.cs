@@ -1,3 +1,4 @@
+using HtmlAgilityPack;
 using MarketMonitorApp;
 using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
@@ -14,6 +15,8 @@ builder.Services.AddScoped<SeedData>();
 builder.Services.AddScoped<IDistributorDetailsService, DistributorDetailsService>();
 builder.Services.AddScoped<IDistributorStrategy, TwojaBronStrategy>();
 builder.Services.AddScoped<IDistributorStrategySelector, DistributorStrategySelector>();
+builder.Services.AddScoped<HtmlWeb>();
+
 
 builder.Services.AddScoped<IPriceScraper, PriceScraper>();
 

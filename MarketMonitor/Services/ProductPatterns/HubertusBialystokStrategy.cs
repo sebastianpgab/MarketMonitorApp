@@ -9,13 +9,18 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class HubertusBialystokStrategy : IDistributorStrategy
     {
+        private readonly HtmlWeb _htmlWeb;
+
+        public HubertusBialystokStrategy(HtmlWeb htmlWeb)
+        {
+            _htmlWeb = htmlWeb;
+        }
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var web = new HtmlWeb();
             string pattern = @"(?<=search/\d+,)\d+(?=,default-asc)";
             string replacement = currentPage.ToString();
             string modifiedUrl = Regex.Replace(baseUrl, pattern, replacement);
-            var document = web.Load(modifiedUrl);
+            var document = _htmlWeb.Load(modifiedUrl);
 
             var products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".abs-layout-product-gallery");
@@ -62,7 +67,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 lastPageNumber = int.Parse(lastPageNumberString);
             }
-
 
             return lastPageNumber;
         }

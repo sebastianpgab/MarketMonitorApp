@@ -9,11 +9,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class SzusterStrategy : IDistributorStrategy
     {
+        private readonly HtmlWeb _htmlWeb;
+
+        public SzusterStrategy(HtmlWeb htmlWeb)
+        {
+            _htmlWeb = htmlWeb;
+        }
+
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var web = new HtmlWeb();
             var pageUrl = currentPage == 1 ? baseUrl : $"{baseUrl}/{currentPage}";
-            var document = web.Load(pageUrl);
+            var document = _htmlWeb.Load(pageUrl);
 
             var products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".product");

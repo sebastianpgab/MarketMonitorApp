@@ -8,15 +8,19 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class HubertusProStrategy : IDistributorStrategy
     {
+        private readonly HtmlWeb _htmlWeb;
+        public HubertusProStrategy(HtmlWeb htmlWeb)
+        {
+            _htmlWeb = htmlWeb;
+        }
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
             var pageUrl = $"{baseUrl}";
-            var web = new HtmlWeb();
             if(currentPage != 1)
             {
               pageUrl = $"{baseUrl}{currentPage}";
             }
-            var document = web.Load(pageUrl);
+            var document = _htmlWeb.Load(pageUrl);
 
             var products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".product");
@@ -60,7 +64,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             return int.TryParse(lastSegment, out int lastPageNumber) ? lastPageNumber : 1;
         }
-
 
         private string CutUrl(string url)
         {

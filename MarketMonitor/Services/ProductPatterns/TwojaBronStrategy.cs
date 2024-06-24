@@ -8,9 +8,9 @@ namespace MarketMonitorApp.Services.ProductsStrategy
 {
     public class TwojaBronStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public TwojaBronStrategy(HtmlWeb htmlWeb)
+        public TwojaBronStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

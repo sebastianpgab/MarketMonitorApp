@@ -9,9 +9,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class HubertusBialystokStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public HubertusBialystokStrategy(HtmlWeb htmlWeb)
+        public HubertusBialystokStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

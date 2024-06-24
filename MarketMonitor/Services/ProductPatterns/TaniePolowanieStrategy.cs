@@ -8,9 +8,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class TaniePolowanieStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public TaniePolowanieStrategy(HtmlWeb htmlWeb)
+        public TaniePolowanieStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

@@ -8,9 +8,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class RParmsStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public RParmsStrategy(HtmlWeb htmlWeb)
+        public RParmsStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

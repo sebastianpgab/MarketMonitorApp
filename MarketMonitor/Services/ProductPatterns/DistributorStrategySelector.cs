@@ -10,8 +10,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
     }
     public class DistributorStrategySelector : IDistributorStrategySelector
     {
-        private readonly HtmlWeb _htmlWeb;
-        public DistributorStrategySelector(HtmlWeb htmlWeb)
+        private readonly IHtmlWebAdapter _htmlWeb;
+        public DistributorStrategySelector(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

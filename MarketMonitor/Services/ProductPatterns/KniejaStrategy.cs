@@ -8,8 +8,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class KniejaStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
-        public KniejaStrategy(HtmlWeb htmlWeb)
+        private readonly IHtmlWebAdapter _htmlWeb;
+        public KniejaStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

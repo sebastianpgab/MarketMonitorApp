@@ -9,9 +9,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class SzusterStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public SzusterStrategy(HtmlWeb htmlWeb)
+        public SzusterStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

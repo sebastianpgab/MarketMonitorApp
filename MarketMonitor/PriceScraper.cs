@@ -40,7 +40,6 @@ namespace MarketMonitorApp
 
                 currentPage++;
             }
-
             return RemoveDuplications(allProducts);
         }
 

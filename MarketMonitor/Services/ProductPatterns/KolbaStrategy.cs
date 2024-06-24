@@ -10,9 +10,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class KolbaStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public KolbaStrategy(HtmlWeb htmlWeb)
+        public KolbaStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

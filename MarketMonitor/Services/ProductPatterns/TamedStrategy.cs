@@ -9,9 +9,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class TamedStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public TamedStrategy(HtmlWeb htmlWeb)
+        public TamedStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

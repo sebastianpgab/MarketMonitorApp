@@ -8,8 +8,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class HubertusProStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
-        public HubertusProStrategy(HtmlWeb htmlWeb)
+        private readonly IHtmlWebAdapter _htmlWeb;
+        public HubertusProStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

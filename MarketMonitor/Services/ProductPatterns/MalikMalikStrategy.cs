@@ -9,9 +9,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class MalikMalikStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public MalikMalikStrategy(HtmlWeb htmlWeb)
+        public MalikMalikStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

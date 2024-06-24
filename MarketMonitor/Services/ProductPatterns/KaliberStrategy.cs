@@ -8,9 +8,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class KaliberStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public KaliberStrategy(HtmlWeb htmlWeb)
+        public KaliberStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

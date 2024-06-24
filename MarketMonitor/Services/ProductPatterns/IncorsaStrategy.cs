@@ -8,9 +8,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 {
     public class IncorsaStrategy : IDistributorStrategy
     {
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public IncorsaStrategy(HtmlWeb htmlWeb)
+        public IncorsaStrategy(IHtmlWebAdapter htmlWeb)
         {
             _htmlWeb = htmlWeb;
         }

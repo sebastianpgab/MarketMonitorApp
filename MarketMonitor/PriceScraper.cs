@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Services;
 using MarketMonitorApp.Services.ProductPatterns;
 using MarketMonitorApp.Services.ProductsStrategy;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -17,9 +18,9 @@ namespace MarketMonitorApp
     {
         private string BaseUrl;
         private readonly IDistributorStrategySelector _distributorStrategySelector;
-        private readonly HtmlWeb _htmlWeb;
+        private readonly IHtmlWebAdapter _htmlWeb;
 
-        public PriceScraper(IDistributorStrategySelector distributorStrategySelector, HtmlWeb htmlWeb)
+        public PriceScraper(IDistributorStrategySelector distributorStrategySelector, IHtmlWebAdapter htmlWeb)
         {
             _distributorStrategySelector = distributorStrategySelector;
             _htmlWeb = htmlWeb;

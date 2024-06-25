@@ -14,7 +14,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             _htmlWeb = htmlWeb;
         }
-        public int GetLastPageNumber(HtmlWeb web, string baseUrl)
+        public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
             var paginationLinks = document.DocumentNode.QuerySelectorAll(".pagination li a")

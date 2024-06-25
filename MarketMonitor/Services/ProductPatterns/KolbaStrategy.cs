@@ -16,7 +16,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             _htmlWeb = htmlWeb;
         }
-        public int GetLastPageNumber(HtmlWeb web, string baseUrl)
+        public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var buttonText = FindButtonWithText(web, baseUrl);
             var maxNumber = double.Parse(FindMaxNumberInButtonText(buttonText));
@@ -120,7 +120,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return baseUrl + "?" + newQuery;
         }
 
-        public string FindButtonWithText(HtmlWeb web, string baseUrl)
+        public string FindButtonWithText(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
             var buttons = document.DocumentNode.SelectNodes("//button");

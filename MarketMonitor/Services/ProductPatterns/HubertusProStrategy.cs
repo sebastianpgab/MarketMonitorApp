@@ -49,7 +49,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return products;
         }
 
-        public int GetLastPageNumber(HtmlWeb web, string baseUrl)
+        public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
             var paginationLinks = document.QuerySelectorAll(".pagination li a");

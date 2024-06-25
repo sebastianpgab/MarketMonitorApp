@@ -73,7 +73,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return productsList;
         }
 
-        public int GetLastPageNumber(HtmlWeb web, string baseUrl)
+        public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             return 1;
         }

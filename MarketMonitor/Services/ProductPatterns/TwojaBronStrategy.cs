@@ -47,7 +47,7 @@ namespace MarketMonitorApp.Services.ProductsStrategy
             return products;
         }
 
-        public int GetLastPageNumber(HtmlWeb web, string baseUrl)
+        public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
             var paginationLinks = document.DocumentNode.QuerySelectorAll(".paginator li a")

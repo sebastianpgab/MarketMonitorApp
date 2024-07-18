@@ -30,48 +30,72 @@ namespace MarketMonitorTests
             _priceScraper = new PriceScraper(_mockStrategySelector.Object, _mockHtmlWebAdapter.Object);
         }
 
-        [Fact]
-        public void GetProducts_ReturnsAllProducts_WhenCalled()
+        public static IEnumerable<object[]> GetProductsTestData()
+        {
+            yield return new object[]
+            {
+                new Product()
+                {
+                    Id = 1,
+                    Name = "Name",
+                    IdProduct = "1",
+                    Price = 23,
+                    IsNew = false
+                },
+                new Product()
+                {
+                    Id = 2,
+                    Name = "Name",
+                    IdProduct = "2",
+                    Price = 25,
+                    IsNew = true
+                },
+                new Product()
+                {
+                    Id = 2,
+                    Name = "Name",
+                    IdProduct = "2",
+                    Price = 25,
+                    IsNew = true
+                }
+            };
+            
+        }
+
+        [Theory]
+        [MemberData(nameof(GetProductsTestData))]
+        public void GetProducts_ShouldReturnAllProducts_WhenCalled(Product firstProduct, Product secondProduct, Product thirdProduct)
         {
             // Arrange
+            var firstPageProducts = new List<Product> { firstProduct };
+            var secondPageProducts = new List<Product> { secondProduct };
+            var thirdPageProducts = new List<Product> { thirdProduct };
 
-            var product = new Product()
-            {
-                Id = 1,
-                Name = "Name",
-                IdProduct = "1",
-                Price = 23,
-                IsNew = false
-            };
-
-            var productTwo = new Product()
-            {
-                Id = 1,
-                Name = "Name",
-                IdProduct = "1",
-                Price = 23,
-                IsNew = false
-            };
-
-            List<Product> productsFormFirstPage = new List<Product>();
-            List<Product> productsFormSecondPage = new List<Product>();
-
-            productsFormSecondPage.Add(productTwo);
-            productsFormFirstPage.Add(product);
-
-            string baseURl = "";
-            int currentPage = 1;
+            string baseUrl = "";
             var distributor = new Distributor();
-            _mockStrategySelector.Setup(p => p.ChoseStrategy(distributor)).Returns( new TwojaBronStrategy(_mockHtmlWebAdapter.Object));
-            //problem with mocking 
-            _mockStrategy.Setup(p => p.GetLastPageNumber(_mockHtmlWebAdapter.Object, baseURl)).Returns(2);
-            _mockStrategy.SetupSequence(p => p.GetProducts(baseURl, currentPage))
-                .Returns(productsFormFirstPage)
-                .Returns(productsFormSecondPage);
-                                       ;
-            //Act
-            var result = _priceScraper.GetProducts(baseURl, distributor);
 
+            _mockStrategySelector.Setup(selector => selector.ChoseStrategy(distributor)).Returns(_mockStrategy.Object);
+
+            _mockStrategy.Setup(strategy => strategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, baseUrl)).Returns(3);
+            _mockStrategy.SetupSequence(strategy => strategy.GetProducts(baseUrl, It.IsAny<int>()))
+                .Returns(firstPageProducts)
+                .Returns(secondPageProducts)
+                .Returns(thirdPageProducts);
+
+            // Act
+            var result = _priceScraper.GetProducts(baseUrl, distributor);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
+            Assert.Contains(result, product => product == firstProduct);
+            Assert.Contains(result, product => product == secondProduct);
+            Assert.Contains(result, product =>
+                product.Id == thirdProduct.Id &&
+                product.Name == thirdProduct.Name &&
+                product.Price == thirdProduct.Price &&
+                product.IsNew == thirdProduct.IsNew);
         }
+
     }
 }

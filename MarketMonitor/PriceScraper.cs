@@ -13,6 +13,8 @@ namespace MarketMonitorApp
     public interface IPriceScraper
     {
         public IEnumerable<Product> GetProducts(string baseUrl, Distributor distributor);
+        public List<Product> RemoveDuplications(List<Product> products);
+
     }
     public class PriceScraper : IPriceScraper
     {
@@ -44,7 +46,7 @@ namespace MarketMonitorApp
             return RemoveDuplications(allProducts);
         }
 
-        private List<Product> RemoveDuplications(List<Product> products)
+        public List<Product> RemoveDuplications(List<Product> products)
         {
             return products.GroupBy(p => p.IdProduct)
                                .Select(g => g.First())

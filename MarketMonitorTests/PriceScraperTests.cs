@@ -13,6 +13,7 @@ using MarketMonitorApp.Services.ProductsStrategy;
 using HtmlAgilityPack;
 using MarketMonitorApp.Services.ProductPatterns;
 using MarketMonitorApp.Services;
+using System.Runtime.Serialization;
 
 namespace MarketMonitorTests
 {
@@ -95,6 +96,25 @@ namespace MarketMonitorTests
                 product.Name == thirdProduct.Name &&
                 product.Price == thirdProduct.Price &&
                 product.IsNew == thirdProduct.IsNew);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetProductsTestData))]
+        public void RemoveDuplications_WhenThereAreDuplications_ReturnListWithoutDuplications(Product firstProduct, Product secondProduct, Product thirdProduct)
+        {
+            //Arrange
+            var products = new List<Product>();
+            products.Add(firstProduct);
+            products.Add(secondProduct);
+            products.Add(thirdProduct);
+
+            //Act
+            var result = _priceScraper.RemoveDuplications(products);
+
+            //Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, product => product == firstProduct);
+            Assert.Contains(result, product => product == secondProduct);
         }
 
     }

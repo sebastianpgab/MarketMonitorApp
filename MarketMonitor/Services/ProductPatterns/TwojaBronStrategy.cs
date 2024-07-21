@@ -41,7 +41,6 @@ namespace MarketMonitorApp.Services.ProductsStrategy
                 newProduct.Price = newPrice;
 
                 products.Add(newProduct);
-
             }
 
             return products;

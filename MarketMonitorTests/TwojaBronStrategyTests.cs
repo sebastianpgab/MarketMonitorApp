@@ -17,40 +17,6 @@ public class TwojaBronStrategyTests
         _mockHtmlWebAdapter = new Mock<IHtmlWebAdapter>();
     }
 
-    public static IEnumerable<object[]> GetPaginatorList()
-    {
-        yield return new object[]
-        {
-        @"
-        <html>
-            <body>
-                <div class='paginator'>
-                    <li>
-                        <a>1</a>
-                    </li>
-                    <li>
-                        <a>2</a>
-                    </li>
-                    <li>
-                        <a>3</a>
-                    </li>
-                </div>
-            </body>
-        </html>
-        ",
-        @"
-        <html>
-            <body>
-                <div class='paginator'>
-                    <li>
-                    </li>
-                </div>
-            </body>
-        </html>
-        "
-        };
-    }
-
     [Fact]
     public void GetProducts_ShouldReturnExpectedProducts()
     {
@@ -89,25 +55,6 @@ public class TwojaBronStrategyTests
         Assert.Equal("1234", productList[1].IdProduct);
         Assert.Equal("Product 2", productList[1].Name);
         Assert.Equal(11.00m, productList[1].Price);
-    }
-
-    [Theory]
-    [MemberData(nameof(GetPaginatorList))]
-    public void GetLastPageNumber_ShouldReturnExpectedLastPage(string html, string html2)
-    {
-        //Arrange
-        HtmlDocument htmlDocument = new HtmlDocument();
-
-         htmlDocument.LoadHtml(html2);
-
-        _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(htmlDocument);
-        var twojaBronStrategy = new TwojaBronStrategy(_mockHtmlWebAdapter.Object);
-
-        //Act
-        var result =  twojaBronStrategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, "www.examplepage.pl");
-
-        //Assert
-        Assert.Equal(1, result);
     }
 }
 

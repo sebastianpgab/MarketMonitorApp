@@ -17,6 +17,45 @@ public class TwojaBronStrategyTests
         _mockHtmlWebAdapter = new Mock<IHtmlWebAdapter>();
     }
 
+    public static IEnumerable<object[]> GetPaginatorList()
+    {
+        yield return new object[]
+        {
+        @"
+        <html>
+            <body>
+                <div class='paginator'>
+                    <li>
+                        <a>1</a>
+                    </li>
+                    <li>
+                        <a>2</a>
+                    </li>
+                    <li>
+                        <a>3</a>
+                    </li>
+                </div>
+            </body>
+        </html>
+        ",
+        3
+        };
+        yield return new object[]
+        {
+        @"
+        <html>
+            <body>
+                <div class='paginator'>
+                    <li>
+                    </li>
+                </div>
+            </body>
+        </html>
+        ",
+        1
+        };
+    }
+
     [Fact]
     public void GetProducts_ShouldReturnExpectedProducts()
     {
@@ -43,7 +82,7 @@ public class TwojaBronStrategyTests
         var strategy = new TwojaBronStrategy(_mockHtmlWebAdapter.Object);
 
         // Act
-        var result = strategy.GetProducts("http://example.com", 1);
+        var result = strategy.GetProducts(It.IsAny<string>(), 1);
 
         // Assert
         Assert.NotNull(result);
@@ -55,6 +94,25 @@ public class TwojaBronStrategyTests
         Assert.Equal("1234", productList[1].IdProduct);
         Assert.Equal("Product 2", productList[1].Name);
         Assert.Equal(11.00m, productList[1].Price);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetPaginatorList))]
+    public void GetLastPageNumber_ShouldReturnExpectedLastPage(string html, int numberOfPage)
+    {
+        //Arrange
+        HtmlDocument htmlDocument = new HtmlDocument();
+
+         htmlDocument.LoadHtml(html);
+
+        _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(htmlDocument);
+        var twojaBronStrategy = new TwojaBronStrategy(_mockHtmlWebAdapter.Object);
+
+        //Act
+        var result =  twojaBronStrategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, It.IsAny<string>());
+
+        //Assert
+        Assert.Equal(numberOfPage, result);
     }
 }
 

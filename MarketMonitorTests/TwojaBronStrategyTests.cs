@@ -25,15 +25,9 @@ public class TwojaBronStrategyTests
         <html>
             <body>
                 <div class='paginator'>
-                    <li>
-                        <a>1</a>
-                    </li>
-                    <li>
-                        <a>2</a>
-                    </li>
-                    <li>
-                        <a>3</a>
-                    </li>
+                    <li><a>1</a></li>
+                    <li><a>2</a></li>
+                    <li><a>3</a></li>
                 </div>
             </body>
         </html>
@@ -46,8 +40,7 @@ public class TwojaBronStrategyTests
         <html>
             <body>
                 <div class='paginator'>
-                    <li>
-                    </li>
+                    <li> </li>
                 </div>
             </body>
         </html>

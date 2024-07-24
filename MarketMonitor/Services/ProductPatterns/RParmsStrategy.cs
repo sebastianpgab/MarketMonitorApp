@@ -14,6 +14,26 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             _htmlWeb = htmlWeb;
         }
+
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
+            }
+        }
+
         public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
@@ -49,16 +69,14 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 var productId = productNode.QuerySelector(".product-miniature").GetAttributeValue("data-id-product", string.Empty);
                 var productName= productNode.QuerySelector(".product_name").InnerText.Trim();
-                var productPrice = productNode.QuerySelector(".price").InnerText.Trim();
+                var priceElement = productNode.QuerySelector(".price");
 
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(productPrice, @"\s+|zł", "").Replace(",", ".");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
 
                 var newProduct = new Product();
                 newProduct.IdProduct = productId;
                 newProduct.Name = productName;
-                newProduct.Price = newPrice;
+                newProduct.Price = CleanPrice(price);
 
                 if (!products.Any(p => p.IdProduct == newProduct.IdProduct))
                 {

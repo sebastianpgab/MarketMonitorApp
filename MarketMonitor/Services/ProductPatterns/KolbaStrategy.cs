@@ -49,7 +49,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
             var productPrice = document.DocumentNode.QuerySelectorAll(".product__price");
 
             var productsNode = productName.Zip(productPrice, (prodName, prodPrice) => new
-            { ProdName = prodName, 
+            { 
+              ProdName = prodName, 
               ProdPrice = prodPrice 
             });
 
@@ -58,19 +59,16 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 var linkHtml = productNode.ProdName.QuerySelector("a").GetAttributeValue("href", string.Empty);
                 var productId = GetProductId(linkHtml);
                 var productNameNode = productNode.ProdName.QuerySelector(".product__name").InnerText.Trim();
-                var productPriceNode = productNode.ProdPrice.QuerySelector(".product__price").InnerText.Trim();
+                var priceElement = productNode.ProdPrice.QuerySelector(".product__price");
 
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(productPriceNode, @"\s+|zł", "").Replace(",", ".");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                var price = priceElement != null ? priceElement.InnerText.Trim() : "0";
 
                 var newProduct = new Product();
                 newProduct.IdProduct = productId;
                 newProduct.Name = productNameNode;
-                newProduct.Price = newPrice;
+                newProduct.Price = CleanPrice(price);
 
                 products.Add(newProduct);
-
             }
             return products;
         }
@@ -159,6 +157,25 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 }
             }
             return "1";
+        }
+
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
+            }
         }
     }
 

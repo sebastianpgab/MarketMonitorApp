@@ -25,20 +25,15 @@ namespace MarketMonitorApp.Services.ProductsStrategy
             foreach (var productNode in productNodes)
             {
                 var productId = productNode.GetAttributeValue("data-product-id", string.Empty);
-                var productNameNode = productNode.QuerySelector(".prodname");
+                var productName = productNode.QuerySelector(".prodname").InnerText.Trim();
                 var priceElement = productNode.QuerySelector(".price em");
 
-                var productName = productNameNode.InnerText.Trim();
-                var price = priceElement.InnerText.Trim();
-
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
 
                 var newProduct = new Product();
                 newProduct.IdProduct = productId;
                 newProduct.Name = productName;
-                newProduct.Price = newPrice;
+                newProduct.Price = CleanPrice(price);
 
                 products.Add(newProduct);
             }
@@ -64,6 +59,25 @@ namespace MarketMonitorApp.Services.ProductsStrategy
             }
 
             return lastPageNumber;
+        }
+
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
+            }
         }
     }
 }

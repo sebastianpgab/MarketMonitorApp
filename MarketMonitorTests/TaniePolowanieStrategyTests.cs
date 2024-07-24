@@ -32,7 +32,7 @@ namespace MarketMonitorTests
                     </div>
                     <div class='product' data-product-id='2'>
                         <div class='productname'>Product 2</div>
-                        <div class='price'><em>4540,00 zł</em></div>
+                        <div class='price'><em></em></div>
                     </div>
                 </html>",
                 2

@@ -6,6 +6,7 @@ using System;
 using System.Formats.Asn1;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MarketMonitorApp.Services
 {
@@ -151,6 +152,5 @@ namespace MarketMonitorApp.Services
 
             return new List<Product>(); // Zwraca pustą listę zamiast `null`
         }
-
     }
 }

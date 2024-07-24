@@ -27,26 +27,16 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             foreach (var productNode in productNodes)
             {
-                var productIdNode = productNode.QuerySelector(".abs-catalog-index");
-                var productNameNode = productNode.QuerySelector(".abs-product-name");
-                var priceElementNode = productNode.QuerySelector(".abs-item-price-amount");
+                var productId = productNode.QuerySelector(".abs-catalog-index").InnerText.Trim();
+                var productName = productNode.QuerySelector(".abs-product-name").InnerText.Trim();
+                var priceElement = productNode.QuerySelector(".abs-item-price-amount");
 
-                var productName = productNameNode.InnerText.Trim();
-                var cleanPrice = priceElementNode != null ? priceElementNode.InnerText
-                .Replace("zł", "")
-                .Replace("brutto", "")
-                .Replace(" ", "")
-                .Replace("\u00A0", "") 
-                .Replace(",", ".")
-                .Trim() : "Price not found";
-
-                decimal newPrice;
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
 
                 var newProduct = new Product();
-                newProduct.IdProduct = productIdNode.InnerText.Trim();
-                newProduct.Name = productNameNode.InnerText.Trim();
-                newProduct.Price = newPrice;
+                newProduct.IdProduct = productId;
+                newProduct.Name = productName;
+                newProduct.Price = CleanPrice(price);
 
                 products.Add(newProduct);
             }
@@ -69,6 +59,31 @@ namespace MarketMonitorApp.Services.ProductPatterns
             }
 
             return lastPageNumber;
+        }
+
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            var cleanPrice = price
+                .Replace("zł", "")
+                .Replace("brutto", "")
+                .Replace(" ", "")
+                .Replace("\u00A0", "")
+                .Replace(",", ".")
+                .Trim();
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
+            }
         }
     }
 }

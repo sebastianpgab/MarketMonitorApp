@@ -7,7 +7,6 @@ namespace MarketMonitorApp.Services.ProductsStrategy
     {
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage);
         public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl);
-
         public decimal CleanPrice(string price);
     }
 }

@@ -28,20 +28,15 @@ namespace MarketMonitorApp.Services.ProductPatterns
             foreach (var productNode in productNodes)
             {
                 var productId = productNode.QuerySelector(".image a").GetAttributeValue("href", string.Empty);
-                var productNameNode = productNode.QuerySelector(".product_name");
+                var productName = productNode.QuerySelector(".product_name").InnerText.Trim();
                 var priceElement = productNode.QuerySelector(".price");
 
-                var productName = productNameNode.InnerText.Trim();
-                var price = priceElement.InnerText.Trim();
-
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(price, @"[^\d,]", "").Replace(",", ".");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
 
                 var newProduct = new Product();
                 newProduct.IdProduct = CutUrl(productId);
                 newProduct.Name = productName;
-                newProduct.Price = newPrice;
+                newProduct.Price = CleanPrice(price);
 
                 products.Add(newProduct);
             }
@@ -77,6 +72,25 @@ namespace MarketMonitorApp.Services.ProductPatterns
             else
             {
                 return string.Empty;
+            }
+        }
+
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            string cleanPrice = Regex.Replace(price, @"[^\d,]", "").Replace(",", ".");
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
             }
         }
     }

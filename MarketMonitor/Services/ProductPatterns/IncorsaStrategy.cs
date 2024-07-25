@@ -67,21 +67,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             foreach (var pair in pairedNodes)
             {
-                var productId = pair.ImgDetails.QuerySelector(".abs-p-catalog-index > span:nth-child(2)");
-                var productNameNode = pair.ImgDetails.QuerySelector(".abs-product-name a");
+                var productId = pair.ImgDetails.QuerySelector(".abs-p-catalog-index > span:nth-child(2)").InnerText.Trim();
+                var productName = pair.ImgDetails.QuerySelector(".abs-product-name a").InnerText.Trim();
                 var priceElement = pair.PurchaseDetails.QuerySelector(".abs-item-price-amount");
 
-                var price = priceElement.InnerText.Trim();
-
-                decimal newPrice;
-                string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".").Replace("brutto", "");
-                bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
 
                 var newProduct = new Product
                 {
-                    IdProduct = productId.InnerText.Trim(),
-                    Name = productNameNode.InnerText.Trim(),
-                    Price = newPrice
+                    IdProduct = productId,
+                    Name = productName,
+                    Price = CleanPrice(price)
                 };
 
                 products.Add(newProduct);
@@ -106,6 +102,25 @@ namespace MarketMonitorApp.Services.ProductPatterns
             string newUrl = url.Substring(0, pageIndex + 5) + newPageNumber + url.Substring(pageEndIndex);
 
             return newUrl;
+        }
+
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".").Replace("brutto", "");
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
+            }
         }
     }
 }

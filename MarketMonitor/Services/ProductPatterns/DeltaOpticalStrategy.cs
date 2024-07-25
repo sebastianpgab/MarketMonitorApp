@@ -41,19 +41,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                     foreach (var productElement in products)
                     {
-                        string productId = productElement.GetAttribute("data-product-id");
-                        string productName = productElement.FindElement(By.CssSelector("h2.product-name > a")).GetAttribute("title").Trim();
-                        string productPrice = productElement.FindElement(By.CssSelector(".product-column .price")).Text.Trim();
+                        var productId = productElement.GetAttribute("data-product-id");
+                        var productName = productElement.FindElement(By.CssSelector("h2.product-name > a")).GetAttribute("title").Trim();
+                        var priceElement = productElement.FindElement(By.CssSelector(".product-column .price"));
 
-                        decimal newPrice;
-                        string cleanPrice = Regex.Replace(productPrice, @"\s+|zł", "").Replace(",", ".");
-                        bool result = decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out newPrice);
+                        var price = priceElement == null ? "0" : priceElement.Text.Trim();
 
                         var product = new Product
                         {
                             IdProduct = productId,
                             Name = productName,
-                            Price = newPrice
+                            Price = CleanPrice(price)
                         };
 
                         productsList.Add(product);
@@ -128,5 +126,23 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return null;
         }
 
+        public decimal CleanPrice(string price)
+        {
+            if (string.IsNullOrWhiteSpace(price))
+            {
+                return 0;
+            }
+
+            string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
+
+            if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))
+            {
+                return newPrice;
+            }
+            else
+            {
+                throw new FormatException($"The price '{price}' is not in a valid format.");
+            }
+        }
     }
 }

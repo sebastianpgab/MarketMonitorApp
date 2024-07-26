@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -39,37 +40,33 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var document = FetchHtmlDocument(baseUrl, currentPage);
-            return ParseProducts(document);
-        }
-
-        private HtmlDocument FetchHtmlDocument(string baseUrl, int currentPage)
-        {
             var pageUrl = baseUrl;
             if (currentPage != 1)
             {
                 pageUrl = ChangePageNumber(baseUrl, currentPage);
             }
-            return _htmlWeb.Load(pageUrl);
+            var document = _htmlWeb.Load(pageUrl);
+
+            return ParseProducts(document);
         }
 
         private IEnumerable<Product> ParseProducts(HtmlDocument document)
         {
             var products = new List<Product>();
-            var imgDetailsNodes = document.DocumentNode.QuerySelectorAll(".abs-layout-img-and-details");
-            var purchaseDetailsNodes = document.DocumentNode.QuerySelectorAll(".abs-layout-purchase");
+            var imgDetailsNodes = document.DocumentNode.QuerySelectorAll(".abs-product-name");
+            var purchaseDetailsNodes = document.DocumentNode.QuerySelectorAll(".abs-item-price-final");
 
             var pairedNodes = imgDetailsNodes.Zip(purchaseDetailsNodes, (imgNode, purchaseNode) => new
             {
-                ImgDetails = imgNode,
+                Name = imgNode,
                 PurchaseDetails = purchaseNode
             }).ToList();
 
             foreach (var pair in pairedNodes)
             {
-                var productId = pair.ImgDetails.QuerySelector(".abs-p-catalog-index > span:nth-child(2)").InnerText.Trim();
-                var productName = pair.ImgDetails.QuerySelector(".abs-product-name a").InnerText.Trim();
-                var priceElement = pair.PurchaseDetails.QuerySelector(".abs-item-price-amount");
+                var productId = pair.Name.QuerySelector("a").GetAttributeValue("href", string.Empty).Trim();
+                var productName = pair.Name.QuerySelector("a").InnerText.Trim();
+                var priceElement = pair.PurchaseDetails;
 
                 var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
 
@@ -85,6 +82,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             return products;
         }
+        PolicyServiceCollectionExtensions an
         private string ChangePageNumber(string url, int newPageNumber)
         {
             int pageIndex = url.IndexOf("page=");

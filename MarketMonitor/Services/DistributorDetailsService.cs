@@ -39,7 +39,6 @@ namespace MarketMonitorApp.Services
             {
                 return null;
             }
-
             return distributor;
         }
 
@@ -50,7 +49,6 @@ namespace MarketMonitorApp.Services
             {
                 return null;
             }
-
             return category;
         }
 
@@ -75,20 +73,18 @@ namespace MarketMonitorApp.Services
             var latestUpdatedProducts = actualization.Products.ToList();
             List<Product> comparedProducts = new List<Product>();
 
-
             var productsTabIds = new HashSet<string>(productsTab.Select(p => p.IdProduct));
 
             foreach (var product in latestUpdatedProducts)
             {
-
                 if (!productsTabIds.Contains(product.IdProduct))
                 {
-                    product.IsNew = true;
+                    product.IsNew = true;   
                     comparedProducts.Add(product);
+                    _context.SaveChanges();
                 }
                 else
                 {
-
                     var originalProduct = productsTab.FirstOrDefault(p => p.IdProduct == product.IdProduct);
                     if (originalProduct != null && originalProduct.Price != product.Price)
                     {
@@ -96,7 +92,6 @@ namespace MarketMonitorApp.Services
                     }
                 }
             }
-
             return comparedProducts;
         }
 
@@ -110,7 +105,6 @@ namespace MarketMonitorApp.Services
             }
 
             var distributorName = actualization.Distributor.Name;
-
 
             string filePath = @"C:\Users\damia\Desktop\xx";
 
@@ -128,16 +122,15 @@ namespace MarketMonitorApp.Services
             return true;
         }
 
+        
         public List<Product> LastUpdatedProducts(Actualization actualization, Category category)
         {
-            // Znajdź ostatnią aktualizację
             var actualizations = _context.Actualizations.Max(p => p.Id);
 
             if (actualizations >= 1)
             {
-                // Pobierz ostatnią aktualizację z odpowiednim dystrybutorem i kategorią
                 var lastActualization = _context.Actualizations
-                    .Include(p => p.Products)  // Uwzględnij powiązane produkty
+                    .Include(p => p.Products)  
                     .Where(p => p.DistributorId == actualization.DistributorId && p.CategoryId == category.Id)
                     .OrderByDescending(p => p.Id)
                     .Skip(1) // Pomija ostatni dodany element, czyli bierze przedostatni
@@ -145,12 +138,11 @@ namespace MarketMonitorApp.Services
 
                 if (lastActualization != null)
                 {
-                    // Pobierz produkty powiązane z tą aktualizacją
                     return lastActualization.Products.ToList();
                 }
             }
 
-            return new List<Product>(); // Zwraca pustą listę zamiast `null`
+            return new List<Product>();
         }
     }
 }

@@ -82,7 +82,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             return products;
         }
-        PolicyServiceCollectionExtensions an
+
         private string ChangePageNumber(string url, int newPageNumber)
         {
             int pageIndex = url.IndexOf("page=");

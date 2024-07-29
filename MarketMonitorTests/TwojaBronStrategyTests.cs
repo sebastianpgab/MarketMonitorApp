@@ -6,46 +6,49 @@ using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
 using MarketMonitorApp.Services;
 using System;
-using System.Runtime.Serialization;
 
 public class TwojaBronStrategyTests
 {
-    Mock<IHtmlWebAdapter> _mockHtmlWebAdapter;
+    private readonly Mock<IHtmlWebAdapter> _mockHtmlWebAdapter;
+    private readonly IDistributorStrategy _twojaBronStrategy;
+    private readonly HtmlDocument _htmlDocument;
 
     public TwojaBronStrategyTests()
     {
         _mockHtmlWebAdapter = new Mock<IHtmlWebAdapter>();
+        _twojaBronStrategy = new TwojaBronStrategy(_mockHtmlWebAdapter.Object);
+        _htmlDocument = new HtmlDocument();
     }
 
     public static IEnumerable<object[]> GetPaginatorList()
     {
         yield return new object[]
         {
-        @"
-        <html>
-            <body>
-                <div class='paginator'>
-                    <li><a>1</a></li>
-                    <li><a>2</a></li>
-                    <li><a>3</a></li>
-                </div>
-            </body>
-        </html>
-        ",
-        3
+            @"
+            <html>
+                <body>
+                    <div class='paginator'>
+                        <li><a>1</a></li>
+                        <li><a>2</a></li>
+                        <li><a>3</a></li>
+                    </div>
+                </body>
+            </html>
+            ",
+            3
         };
         yield return new object[]
         {
-        @"
-        <html>
-            <body>
-                <div class='paginator'>
-                    <li> </li>
-                </div>
-            </body>
-        </html>
-        ",
-        1
+            @"
+            <html>
+                <body>
+                    <div class='paginator'>
+                        <li> </li>
+                    </div>
+                </body>
+            </html>
+            ",
+            1
         };
     }
 
@@ -67,15 +70,11 @@ public class TwojaBronStrategyTests
                 </body>
             </html>";
 
-        var htmlDoc = new HtmlDocument();
-        htmlDoc.LoadHtml(html);
-
-        _mockHtmlWebAdapter.Setup(web => web.Load(It.IsAny<string>())).Returns(htmlDoc);
-
-        var strategy = new TwojaBronStrategy(_mockHtmlWebAdapter.Object);
+        _htmlDocument.LoadHtml(html);
+        _mockHtmlWebAdapter.Setup(web => web.Load(It.IsAny<string>())).Returns(_htmlDocument);
 
         // Act
-        var result = strategy.GetProducts(It.IsAny<string>(), 1);
+        var result = _twojaBronStrategy.GetProducts(It.IsAny<string>(), 1);
 
         // Assert
         Assert.NotNull(result);
@@ -93,19 +92,46 @@ public class TwojaBronStrategyTests
     [MemberData(nameof(GetPaginatorList))]
     public void GetLastPageNumber_ShouldReturnExpectedLastPage(string html, int numberOfPage)
     {
-        //Arrange
-        HtmlDocument htmlDocument = new HtmlDocument();
+        // Arrange
+        _htmlDocument.LoadHtml(html);
+        _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
 
-         htmlDocument.LoadHtml(html);
+        // Act
+        var result = _twojaBronStrategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, It.IsAny<string>());
 
-        _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(htmlDocument);
-        var twojaBronStrategy = new TwojaBronStrategy(_mockHtmlWebAdapter.Object);
-
-        //Act
-        var result =  twojaBronStrategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, It.IsAny<string>());
-
-        //Assert
+        // Assert
         Assert.Equal(numberOfPage, result);
     }
-}
 
+    [Theory]
+    [InlineData("321,00 zł", 321.00)]
+    [InlineData("321,00zł", 321.00)]
+    [InlineData("321.00zł", 321.00)]
+    [InlineData(" 321,00 zł ", 321.00)]
+    [InlineData("321 zł", 321.00)]
+    [InlineData("321", 321.00)]
+    [InlineData(null, 0)]
+    [InlineData("", 0)]
+
+    public void CleanPrice_ValidPriceString_ShouldReturnExpectedDecimal(string price , decimal expected)
+    {
+        //Act
+        var result = _twojaBronStrategy.CleanPrice(price);
+
+        //Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("54..00zł")]
+    [InlineData("54.,00zł")]
+    [InlineData("00,00 brutto")]
+    public void CleanPrice_InvalidPriceString_ShouldReturnExpectedDecimal(string price)
+    {
+        //Act
+        Action action = () => { _twojaBronStrategy.CleanPrice(price);};
+
+        //Assert
+        Assert.Throws<FormatException>(action);
+    }
+}

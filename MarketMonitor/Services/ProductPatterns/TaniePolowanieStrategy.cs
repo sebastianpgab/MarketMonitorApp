@@ -18,23 +18,23 @@ namespace MarketMonitorApp.Services.ProductPatterns
         public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
-            var paginationLinks = document.QuerySelectorAll(".paginator li a").ToList();
+            var paginationLinks = document.QuerySelectorAll(".paginator li a")
+                                          .Select(a => a.InnerText.Trim())
+                                          .ToList();
 
-            if (paginationLinks.Count == 0)
-            {
-                return 1;
-            }
+            if (!paginationLinks.Any()) {return 1;}
 
-            var lastPageString = paginationLinks[paginationLinks.Count - 2].InnerText.Trim();
+            try
+            {
+                string lastPageString = paginationLinks[^2];
 
-            if (int.TryParse(lastPageString, out int lastPageNumber))
-            {
-                return lastPageNumber;
+                if (int.TryParse(lastPageString, out int lastPageNumber))
+                {
+                    return lastPageNumber;
+                }
             }
-            else
-            {
-                return 1;
-            }
+            catch (Exception ex) when (ex is ArgumentOutOfRangeException || ex is NullReferenceException) { }
+            return 1;
         }
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)

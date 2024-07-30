@@ -59,7 +59,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 var linkHtml = productNode.ProdName.QuerySelector("a").GetAttributeValue("href", string.Empty);
                 var productId = GetProductId(linkHtml);
                 var productNameNode = productNode.ProdName.QuerySelector(".product__name").InnerText.Trim();
-                var priceElement = productNode.ProdPrice.QuerySelector(".product__price");
+                var priceElement = productNode.ProdPrice.QuerySelector(".flex .text-xl.font-heading.font-bold");
 
                 var price = priceElement != null ? priceElement.InnerText.Trim() : "0";
 

@@ -33,7 +33,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     return lastPageNumber;
                 }
             }
-            catch (Exception ex) when (ex is ArgumentOutOfRangeException || ex is NullReferenceException) { }
+            catch (Exception ex) when (ex is ArgumentOutOfRangeException || ex is NullReferenceException) 
+            {
+                Console.WriteLine($"Error occurred: {ex.Message}");
+            }
             return 1;
         }
 

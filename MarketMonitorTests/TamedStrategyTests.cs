@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
 using MarketMonitorApp.Services.ProductPatterns;
 using Moq;
@@ -102,6 +103,53 @@ namespace MarketMonitorTests
 
             // Assert
             Assert.Equal(expectedLastPageNumber, result);
+        }
+
+        [Fact]
+        public void GetProducts_ShouldReturnCorrectProducts()
+        {
+            //Arrange
+            var html = @"
+            <html>
+                <body>
+                    <div class='ajax_block_product'>
+                        <div class='leo-more-info' data-idproduct='123'></div>
+                        <div class='product-title'>
+                            <a href='https://tamed.pl/glowna/infiray-tube-tl50'>InfiRay Eye Series V2.0 C2w</a>
+                        </div>
+                        <div class='price'>
+                            <span itemprop='price'>200,00 zł</span>
+                        </div>
+                    </div>
+                    <div class='ajax_block_product'>
+                        <div class='leo-more-info' data-idproduct='32132-125'></div>
+                        <div class='product-title'>
+                            <a href='https://tamed.pl/termowizory-infiray/infiray-scl35w'>Infiray SCL35W</a>
+                        </div>
+                        <div class='price'>
+                            <span itemprop='price'>5,50zł</span>
+                        </div>
+                    </div>
+                </body>
+            </html>";
+
+
+            _htmlDocument.LoadHtml(html);
+            _htmlWebAdapterMock.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            //Act
+            var result = _tamedStrategy.GetProducts("url", 1);
+
+            //Assert
+            List<Product> products = new List<Product>(result);
+            Assert.NotNull(result);
+            Assert.Equal(2, products.Count);
+            Assert.Equal("123", products[0].IdProduct);
+            Assert.Equal("infiray tube tl50", products[0].Name);
+            Assert.Equal(200.00m, products[0].Price);
+            Assert.Equal("32132-125", products[1].IdProduct);
+            Assert.Equal("infiray scl35w", products[1].Name);
+            Assert.Equal(5.50m, products[1].Price);
         }
     }
 }

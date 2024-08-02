@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
 using MarketMonitorApp.Services.ProductPatterns;
 using Moq;
@@ -13,69 +14,124 @@ namespace MarketMonitorTests
 {
     public class SzusterStrategyTests
     {
-        private readonly Mock<IHtmlWebAdapter> _htmlWebAdapter;
+        private readonly Mock<IHtmlWebAdapter> _mockHtmlWebAdapter;
         private readonly SzusterStrategy _szusterStrategy;
         private readonly HtmlDocument _htmlDocument;
+
         public SzusterStrategyTests()
         {
-            _htmlWebAdapter = new Mock<IHtmlWebAdapter>();
-            _szusterStrategy = new SzusterStrategy(_htmlWebAdapter.Object);
+            _mockHtmlWebAdapter = new Mock<IHtmlWebAdapter>();
+            _szusterStrategy = new SzusterStrategy(_mockHtmlWebAdapter.Object);
             _htmlDocument = new HtmlDocument();
         }
 
-        private static IEnumerable<object[]> GetData()
+        private static IEnumerable<object[]> HtmlPaginationTestData()
         {
             yield return new object[]
             {
-            @"<html>
-              <div class='pagination'>
-              <li><a href='/manufacturer/rws/8'></a></li>
-              </div>
-            </html>",
-            8
+                @"<html>
+                  <div class='pagination'>
+                  <li><a href='/manufacturer/rws/8'></a></li>
+                  </div>
+                </html>",
+                8
             };
             yield return new object[]
             {
-            @"<html>
-              <div class='pagination'>
-              <li><a href='/manufacturer/rws/'></a></li>
-              </div>
-            </html>",
-            1
+                @"<html>
+                  <div class='pagination'>
+                  <li><a href='/manufacturer/rws/'></a></li>
+                  </div>
+                </html>",
+                1
             };
             yield return new object[]
             {
-            @"<html>
-              <div class='pagination'>
-              <li><a href=''></a></li>
-              </div>
-            </html>",
-            1
+                @"<html>
+                  <div class='pagination'>
+                  <li><a href=''></a></li>
+                  </div>
+                </html>",
+                1
             };
             yield return new object[]
             {
-            @"<html>
-              <div class=''>
-              <li><a href=''></a></li>
-              </div>
-            </html>",
-            1
+                @"<html>
+                  <div class=''>
+                  <li><a href=''></a></li>
+                  </div>
+                </html>",
+                1
             };
         }
 
         [Theory]
-        [MemberData(nameof(GetData))]
-        public void GetLastPageNumber_WhenHtmlIsValid_ShouldReturnCorrectLastPageNumber(string html, int lastPage)
+        [MemberData(nameof(HtmlPaginationTestData))]
+        public void GetLastPageNumber_ShouldReturnCorrectLastPageNumber_WhenHtmlIsValid(string htmlContent, int expectedLastPageNumber)
         {
-            //Arrange
+            // Arrange
+            _htmlDocument.LoadHtml(htmlContent);
+            _mockHtmlWebAdapter.Setup(adapter => adapter.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            // Act
+            var actualLastPageNumber = _szusterStrategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, "url");
+
+            // Assert
+            Assert.Equal(expectedLastPageNumber, actualLastPageNumber);
+        }
+
+        [Fact]
+        public void GetProducts_ShouldReturnCorrectProducts_WhenHtmlHasMultipleProducts()
+        {
+            var html =
+            @"
+             <html>
+                 <div class='product'>
+                     <div class='name'><a href='/manufacturer/rws/srut-rws-hobby-5-5-mm-0-77g-500-srucin.html'></a></div>
+                     <div class='price'>45,00 zł</div>
+                 </div>
+                 <div class='product'>
+                     <div class='name'><a href='/manufacturer/jsb/srut-jsb-exact-4-5-mm-0-547g-500-sztuk.html'></a></div>
+                     <div class='price'>70,00 zł</div>
+                 </div>
+             </html>
+            ";
+
             _htmlDocument.LoadHtml(html);
-            _htmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
 
-            //Act
-            var result = _szusterStrategy.GetLastPageNumber(_htmlWebAdapter.Object, "ulr");
+            var result = _szusterStrategy.GetProducts("url", 1);
 
-            //Arrange
-            Assert.Equal(lastPage, result);
+            List<Product> products = new List<Product>(result);
+
+            Assert.NotNull(result);
+            Assert.Equal(2, products.Count);
+            Assert.Equal("srut rws hobby 5 5 mm 0 77g 500 srucin", products[0].Name);
+            Assert.Equal("rws/srut-rws-hobby-5-5-mm-0-77g-500-srucin", products[0].IdProduct);
+            Assert.Equal(45.00m, products[0].Price);
+
+            Assert.Equal("srut jsb exact 4 5 mm 0 547g 500 sztuk", products[1].Name);
+            Assert.Equal("jsb/srut-jsb-exact-4-5-mm-0-547g-500-sztuk", products[1].IdProduct);
+            Assert.Equal(70.00m, products[1].Price);
+        }
+
+        [Fact]
+        public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
+        {
+            var html =
+            @"
+             <html>
+                 <div class='no-products'></div>
+             </html>
+            ";
+
+            _htmlDocument.LoadHtml(html);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            var result = _szusterStrategy.GetProducts("url", 1);
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
         }
     }
 }

@@ -39,7 +39,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 newProduct.Price = CleanPrice(price);
 
                 products.Add(newProduct);
-
             }
 
             return products;

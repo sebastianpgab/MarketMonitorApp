@@ -6,6 +6,7 @@ using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services.ProductsStrategy;
 using MarketMonitorApp.Services;
 using System;
+using MarketMonitorApp.Services.ProductPatterns;
 
 public class TwojaBronStrategyTests
 {
@@ -133,5 +134,24 @@ public class TwojaBronStrategyTests
 
         //Assert
         Assert.Throws<FormatException>(action);
+    }
+
+    [Fact]
+    public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
+    {
+        var html =
+        @"
+             <html>
+                 <div class='no-products'></div>
+             </html>
+            ";
+
+        _htmlDocument.LoadHtml(html);
+        _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+        var result = _twojaBronStrategy.GetProducts("url", 1);
+
+        Assert.NotNull(result);
+        Assert.Empty(result);
     }
 }

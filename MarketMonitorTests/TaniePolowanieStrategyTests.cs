@@ -158,5 +158,24 @@ namespace MarketMonitorTests
             //Assert
             Assert.Equal(expectedResult, result);
         }
+
+        [Fact]
+        public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
+        {
+            var html =
+            @"
+             <html>
+                 <div class='no-products'></div>
+             </html>
+            ";
+
+            _htmlDoc.LoadHtml(html);
+            _mockWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDoc);
+
+            var result = _taniePolowanieStrategy.GetProducts("url", 1);
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
     }
 }

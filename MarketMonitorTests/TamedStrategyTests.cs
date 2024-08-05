@@ -151,5 +151,24 @@ namespace MarketMonitorTests
             Assert.Equal("infiray scl35w", products[1].Name);
             Assert.Equal(5.50m, products[1].Price);
         }
+
+        [Fact]
+        public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
+        {
+            var html =
+            @"
+             <html>
+                 <div class='no-products'></div>
+             </html>
+            ";
+
+            _htmlDocument.LoadHtml(html);
+            _htmlWebAdapterMock.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            var result = _tamedStrategy.GetProducts("url", 1);
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
     }
 }

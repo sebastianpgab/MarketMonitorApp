@@ -367,7 +367,7 @@ public class SeedData
                     {
                         new Category
                         {
-                            Name ="Hikmikro",
+                            Name ="Hikmikro (old)",
                             LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=hikmicro"
                         },
                         new Category
@@ -401,6 +401,11 @@ public class SeedData
                         {
                             Name ="Senopex",
                             LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/senopex/"
+                        },
+                        new Category
+                        {
+                            Name ="Hikmicro",
+                            LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/hikmicro/"
                         },
                     }
                 },

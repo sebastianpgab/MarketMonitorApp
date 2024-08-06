@@ -46,7 +46,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 return 1;
             }
 
-            var lastPageString = paginationLinks[paginationLinks.Count - 1].InnerText.Trim();
+            var lastPageString = paginationLinks[^1].InnerText.Trim();
 
             if (int.TryParse(lastPageString, out int lastPageNumber))
             {

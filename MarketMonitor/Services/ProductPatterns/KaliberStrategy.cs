@@ -77,7 +77,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 newProduct.Name = productName;
                 newProduct.Price = CleanPrice(price);
 
-                products.Add(newProduct);
+                if (!products.Any(p => p.IdProduct == newProduct.IdProduct))
+                {
+                    products.Add(newProduct);
+                }
 
             }
 

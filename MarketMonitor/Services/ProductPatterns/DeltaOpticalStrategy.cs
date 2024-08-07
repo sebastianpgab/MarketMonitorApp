@@ -54,7 +54,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                             Price = CleanPrice(price)
                         };
 
-                        productsList.Add(product);
+                        if(!productsList.Any(p => p.IdProduct == product.IdProduct))
+                        {
+                            productsList.Add(product);
+                        }
                     }
 
                 }

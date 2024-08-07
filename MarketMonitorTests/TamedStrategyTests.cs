@@ -130,6 +130,15 @@ namespace MarketMonitorTests
                             <span itemprop='price'>5,50zł</span>
                         </div>
                     </div>
+                    <div class='ajax_block_product'>
+                        <div class='leo-more-info' data-idproduct='32132-125'></div>
+                        <div class='product-title'>
+                            <a href='https://tamed.pl/termowizory-infiray/infiray-scl35w'>Infiray SCL35W</a>
+                        </div>
+                        <div class='price'>
+                            <span itemprop='price'>5,50zł</span>
+                        </div>
+                    </div>
                 </body>
             </html>";
 
@@ -155,12 +164,7 @@ namespace MarketMonitorTests
         [Fact]
         public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
         {
-            var html =
-            @"
-             <html>
-                 <div class='no-products'></div>
-             </html>
-            ";
+            var html = "<html><body></body></html>";
 
             _htmlDocument.LoadHtml(html);
             _htmlWebAdapterMock.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
@@ -169,6 +173,31 @@ namespace MarketMonitorTests
 
             Assert.NotNull(result);
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public void GetProducts_MissingProductNameSelector_ShouldThrowNullReferenceException()
+        {
+            string html =
+            @"
+            <html>
+                <div class='ajax_block_product'>
+                    <div class='leo-more-info' data-idproduct='123'></div>>
+                    <div class='price'>
+                        <span itemprop='price'>200,00 zł</span>
+                    </div>
+                </div>
+            </html>
+            ";
+
+            _htmlDocument.LoadHtml(html);
+            _htmlWebAdapterMock.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            //Act
+            Action action = () => { _tamedStrategy.GetProducts("url", 1); };
+
+            //Assert
+            Assert.Throws<NullReferenceException>(action);
         }
     }
 }

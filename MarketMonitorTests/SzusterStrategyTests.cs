@@ -81,7 +81,7 @@ namespace MarketMonitorTests
         }
 
         [Fact]
-        public void GetProducts_ShouldReturnCorrectProducts_WhenHtmlHasMultipleProducts()
+        public void GetProducts_ShouldReturnCorrectProducts()
         {
             var html =
             @"
@@ -89,6 +89,10 @@ namespace MarketMonitorTests
                  <div class='product'>
                      <div class='name'><a href='/manufacturer/rws/srut-rws-hobby-5-5-mm-0-77g-500-srucin.html'></a></div>
                      <div class='price'>45,00 zł</div>
+                 </div>
+                 <div class='product'>
+                     <div class='name'><a href='/manufacturer/jsb/srut-jsb-exact-4-5-mm-0-547g-500-sztuk.html'></a></div>
+                     <div class='price'>70,00 zł</div>
                  </div>
                  <div class='product'>
                      <div class='name'><a href='/manufacturer/jsb/srut-jsb-exact-4-5-mm-0-547g-500-sztuk.html'></a></div>
@@ -120,9 +124,7 @@ namespace MarketMonitorTests
         {
             var html =
             @"
-             <html>
-                 <div class='no-products'></div>
-             </html>
+              <html><body></body></html>
             ";
 
             _htmlDocument.LoadHtml(html);
@@ -133,5 +135,28 @@ namespace MarketMonitorTests
             Assert.NotNull(result);
             Assert.Empty(result);
         }
+
+        [Fact]
+        public void GetProducts_MissingProductNameSelector_ShouldThrowNullReferenceException()
+        {
+            string html =
+            @"
+            <html>
+              <div class='product'>
+                <div class='price'>45,00 zł</div>
+              </div>
+            </html>
+            ";
+
+            _htmlDocument.LoadHtml(html);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            //Act
+            Action action = () => { _szusterStrategy.GetProducts("url", 1); };
+
+            //Assert
+            Assert.Throws<NullReferenceException>(action);
+        }
+
     }
 }

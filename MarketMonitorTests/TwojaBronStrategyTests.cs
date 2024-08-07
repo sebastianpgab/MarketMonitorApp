@@ -68,6 +68,10 @@ public class TwojaBronStrategyTests
                         <div class='prodname'>Product 2</div>
                         <div class='price'><em>11,00 zł</em></div>
                     </div>
+                   <div class='product' data-product-id='1234'>
+                        <div class='prodname'>Product 2</div>
+                        <div class='price'><em>11,00 zł</em></div>
+                    </div>
                 </body>
             </html>";
 
@@ -139,12 +143,7 @@ public class TwojaBronStrategyTests
     [Fact]
     public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
     {
-        var html =
-        @"
-             <html>
-                 <div class='no-products'></div>
-             </html>
-            ";
+        var html = "<html><body></body></html>";
 
         _htmlDocument.LoadHtml(html);
         _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
@@ -153,5 +152,27 @@ public class TwojaBronStrategyTests
 
         Assert.NotNull(result);
         Assert.Empty(result);
+    }
+
+    [Fact]
+    public void GetProducts_MissingProductNameSelector_ShouldThrowNullReferenceException()
+    {
+        string html =
+        @"
+            <html>
+                <div class='product' data-product-id='123'>
+                    <div class='price'><em>10,00 zł</em></div>
+                </div>
+            </html>
+            ";
+
+        _htmlDocument.LoadHtml(html);
+        _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+        //Act
+        Action action = () => { _twojaBronStrategy.GetProducts("url", 1); };
+
+        //Assert
+        Assert.Throws<NullReferenceException>(action);
     }
 }

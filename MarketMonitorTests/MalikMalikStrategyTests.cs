@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using MarketMonitorApp.Entities;
 
 namespace MarketMonitorTests
 {
@@ -101,6 +102,86 @@ namespace MarketMonitorTests
 
             //Assert
             Assert.Equal(pageNumber, result);
+        }
+
+        [Fact]
+        public void GetProducts_ShouldReturnCorrectProducts()
+        {
+            //Arrange
+            string html = @"
+            <html>
+              <div class='djc_item_in'>
+                <div class='djc_price' data-itemid=123></div>
+                <div class='djc_title'>Ata Arms karabin 30-06</div>
+                <div class='djc_price_value'>24,00 zł</div> 
+              </div>
+              <div class='djc_item_in'>
+                <div class='djc_price' data-itemid=123></div>
+                <div class='djc_title'>Ata Arms karabin 30-06</div>
+                <div class='djc_price_value'>24,00 zł</div> 
+              </div>
+              <div class='djc_item_in'>
+                <div class='djc_price' data-itemid=1234></div>
+                <div class='djc_title'>Blaser R8 Ultimate Carbon</div>
+                <div class='djc_price_value'>222324,00 zł</div> 
+              </div>
+            </html>";
+
+            _htmlDocument.LoadHtml(html);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            //Act
+            var result = _malikMalikStrategy.GetProducts("url", 1);
+
+            List<Product> products = new List<Product>(result);
+
+            //Assert
+            Assert.Equal(2, products.Count());
+            Assert.Equal("123", products[0].IdProduct);
+            Assert.Equal("Ata Arms karabin 30-06", products[0].Name);
+            Assert.Equal(24.00m, products[0].Price);
+            Assert.Equal("1234", products[1].IdProduct);
+            Assert.Equal("Blaser R8 Ultimate Carbon", products[1].Name);
+            Assert.Equal(222324.00m, products[1].Price);
+        }
+
+        [Fact]
+        public void GetProducts_MissingProductNameSelector_ShouldThrowNullReferenceException()
+        {
+            string html =
+            @"
+            <html>
+              <div class='djc_item_in'>
+                <div class='djc_price' data-itemid=123></div>
+                <div class='djc_price_value'>222324,00 zł</div> 
+              </div>
+            </html>
+            ";
+
+            _htmlDocument.LoadHtml(html);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            //Act
+            Action action = () => { _malikMalikStrategy.GetProducts("url", 1); };
+
+            //Assert
+            Assert.Throws<NullReferenceException>(action);
+        }
+
+        [Fact]
+        public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
+        {
+            // Arrange
+            var html = "<html><body></body></html>";
+            _htmlDocument.LoadHtml(html);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            // Act
+            var result = _malikMalikStrategy.GetProducts("url", 1);
+
+            // Assert
+            Assert.Empty(result);
+            Assert.NotNull(result);
         }
 
 

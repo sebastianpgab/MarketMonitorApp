@@ -162,12 +162,7 @@ namespace MarketMonitorTests
         [Fact]
         public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
         {
-            var html =
-            @"
-             <html>
-                 <div class='no-products'></div>
-             </html>
-            ";
+            var html = "<html><body></body></html>";
 
             _htmlDoc.LoadHtml(html);
             _mockWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDoc);

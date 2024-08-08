@@ -121,7 +121,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return baseUrl + "?" + newQuery;
         }
 
-        public string FindButtonWithText(IHtmlWebAdapter web, string baseUrl)
+        private string FindButtonWithText(IHtmlWebAdapter web, string baseUrl)
         {
             var document = web.Load(baseUrl);
             var buttons = document.DocumentNode.SelectNodes("//button");
@@ -141,7 +141,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return null;
         }
 
-        public string FindMaxNumberInButtonText(string buttonText)
+        private string FindMaxNumberInButtonText(string buttonText)
         {
             if(buttonText != null)
             {

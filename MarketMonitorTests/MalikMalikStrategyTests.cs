@@ -91,7 +91,7 @@ namespace MarketMonitorTests
 
         [Theory]
         [MemberData(nameof(GetLastPageNumberTestCases))]
-        public void ShouldReturnCorrectLastPageNumber_WhenHtmlIsValid(string html, int pageNumber)
+        public void GetLastPageNumber_ShouldReturnCorrect_WhenHtmlIsValid(string html, int pageNumber)
         {
             //Arrange
             _htmlDocument.LoadHtml(html);

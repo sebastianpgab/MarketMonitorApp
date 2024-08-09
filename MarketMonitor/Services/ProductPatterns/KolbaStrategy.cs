@@ -19,13 +19,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
         public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
         {
             var buttonText = FindButtonWithText(web, baseUrl);
-            var maxNumber = double.Parse(FindMaxNumberInButtonText(buttonText));
+            var maxNumber = buttonText == null || buttonText == string.Empty ? 0 : double.Parse(FindMaxNumberInButtonText(buttonText));
             var numberOfElementsPerPage = 36;
 
-            if (maxNumber > numberOfElementsPerPage)
-            {
-                maxNumber += numberOfElementsPerPage;
-            }
+            maxNumber += numberOfElementsPerPage;
 
             double result = maxNumber / numberOfElementsPerPage;
 

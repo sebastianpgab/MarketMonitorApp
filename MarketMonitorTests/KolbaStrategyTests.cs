@@ -24,13 +24,13 @@ namespace MarketMonitorTests
         }
 
         [Theory]
-        [InlineData("Załaduj następne (1 z 79)", 3)]
-        [InlineData("Załaduj następne (1 z 72)", 2)]
-        [InlineData("Załaduj następne (1 z 35)", 1)] 
-        [InlineData("Załaduj następne (1 z 100)", 3)]
-        [InlineData("Załaduj następne (1 z 1)", 1)]
-        [InlineData("Załaduj następne (1 z 37)", 2)] 
-        [InlineData("Załaduj następne (1 z 0)", 1)] 
+        [InlineData("Załaduj następne (1 z 79)", 4)]
+        [InlineData("Załaduj następne (1 z 72)", 3)]
+        [InlineData("Załaduj następne (1 z 35)", 2)]
+        [InlineData("Załaduj następne (1 z 100)", 4)]
+        [InlineData("Załaduj następne (1 z 1)", 2)]
+        [InlineData("Załaduj następne (1 z 37)", 3)]
+        [InlineData("Załaduj następne (1 z 0)", 1)]
         [InlineData("Załaduj następne (1 z 108)", 4)]
         [InlineData("", 1)]
 

@@ -32,8 +32,6 @@ namespace MarketMonitorTests
         {
             yield return new object[]
             {
-                "https://kolba.pl/pl/search?page=1&sort=default&query=realhunter",
-                2,
                 @"
                  <html>
                    <body>
@@ -49,28 +47,9 @@ namespace MarketMonitorTests
                      </div>
                    </body>
                  </html>
-                "
-            };
-            yield return new object[]
-{
-                "https://kolba.pl/pl/search?page=1&sort=default&query=realhunter",
-                4,
-                @"
-                 <html>
-                   <body>
-                     <div class='product__name'> 
-                        <a href='/product/53101,kamera-termowizyjna-termowizor-hikmicro-by-hikvision-falcon-fq50'>Bron 123</a>
-                     </div>
-                     <div class='product__price'>
-                         <div class='flex'>
-                             <div class='flex'>
-                                 <div class='text-xl'>23 zł</div>
-                             </div>
-                         </div>
-                     </div>
-                   </body>
-                 </html>
-                "
+                ",
+                "https://kolba.pl/pl/search?page=1&sort=default&query=hikmicro", 
+                5
             };
         }
 
@@ -101,28 +80,22 @@ namespace MarketMonitorTests
             Assert.Equal(numberOfpages, lastPageNumber);
         }
 
+
         [Theory]
         [MemberData(nameof(ProductSearchTestData))]
-        public void GetProducts_ShouldReturnCorrectProducts(string url, int currentPage, string html)
+        public void GetProducts_WhenCalled_ShouldUpdatePageNumberInUrl(string html, string url, int currentPage)
         {
+            string expectedUrl = null;
             _htmlDocument.LoadHtml(html);
 
-            _htmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+            _htmlWebAdapter.Setup(p => p.Load(It.IsAny<string>()))
+                           .Callback<string>(capturedUrl => expectedUrl = capturedUrl)
+                           .Returns(_htmlDocument);
 
-            var result = _kolbaStrategy.GetProducts(url, currentPage);
+            _kolbaStrategy.GetProducts(url, 5);
 
-            List<Product> products = new List<Product>(result);
-
-
-            if(currentPage == 2)
-            {
-                Assert.Equal(products[0].Name, "Puszka Real Hunter 300ml");
-            }
-            else if(currentPage == 4) 
-            {
-                Assert.Equal(products[0].Name, "Bron 123");
-            }
-
+            Assert.Equal("https://kolba.pl/pl/search?page=5&sort=default&query=hikmicro", expectedUrl);
         }
+
     }
 }

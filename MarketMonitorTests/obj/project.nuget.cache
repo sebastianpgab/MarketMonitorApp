@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "TtIJ5N/2SPVXa7GeRr5ulBvARqFoflEwLlZzYsUuUrdeX0yoTwwNovKr9+8HlnBz1nuaqE3YA6wMTrSP2tk92g==",
+  "dgSpecHash": "KpGz8ScJqYYclvwveKKa/+AyjRTgb6pkBZA1iblJbcnaShazDXkuW80FqW4NIM750StMW/dXaBNewwbotZ6q1g==",
   "success": true,
   "projectFilePath": "D:\\repos\\MarketMonitorFolder\\MarketMonitorTests\\MarketMonitorTests.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\damia\\.nuget\\packages\\coverlet.collector\\3.1.0\\coverlet.collector.3.1.0.nupkg.sha512",
     "C:\\Users\\damia\\.nuget\\packages\\csvhelper\\31.0.4\\csvhelper.31.0.4.nupkg.sha512",
     "C:\\Users\\damia\\.nuget\\packages\\dotnetseleniumextras.waithelpers\\3.11.0\\dotnetseleniumextras.waithelpers.3.11.0.nupkg.sha512",
+    "C:\\Users\\damia\\.nuget\\packages\\fluentassertions\\6.12.0\\fluentassertions.6.12.0.nupkg.sha512",
     "C:\\Users\\damia\\.nuget\\packages\\htmlagilitypack\\1.11.60\\htmlagilitypack.1.11.60.nupkg.sha512",
     "C:\\Users\\damia\\.nuget\\packages\\htmlagilitypack.cssselectors\\1.0.2\\htmlagilitypack.cssselectors.1.0.2.nupkg.sha512",
     "C:\\Users\\damia\\.nuget\\packages\\microsoft.codecoverage\\16.11.0\\microsoft.codecoverage.16.11.0.nupkg.sha512",

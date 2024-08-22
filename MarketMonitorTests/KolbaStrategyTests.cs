@@ -206,5 +206,22 @@ namespace MarketMonitorTests
         }
 
 
+        [Fact]
+        public void GetProducts_ShouldReturnEmptyList_WhenNoProductsInHtml()
+        {
+            // Arrange
+            var html = "<html><body></body></html>";
+            _htmlDocument.LoadHtml(html);
+            _htmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
+
+            // Act
+            var result = _kolbaStrategy.GetProducts("url", 1);
+
+            // Assert
+            Assert.Empty(result);
+            Assert.NotNull(result);
+        }
+
+
     }
 }

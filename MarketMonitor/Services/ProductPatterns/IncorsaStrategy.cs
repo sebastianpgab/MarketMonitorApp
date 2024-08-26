@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Helpers;
 using MarketMonitorApp.Services.ProductsStrategy;
 using System.Collections.Generic;
 using System.Globalization;
@@ -66,6 +67,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 var productId = pair.Name.QuerySelector("a").GetAttributeValue("href", string.Empty).Trim();
                 var productName = pair.Name.QuerySelector("a").InnerText.Trim();
+                ValidationHelper.ValidateProductName(productName);
                 var priceElement = pair.PurchaseDetails;
 
                 var price = priceElement == null ? "0" : priceElement.InnerText.Trim();

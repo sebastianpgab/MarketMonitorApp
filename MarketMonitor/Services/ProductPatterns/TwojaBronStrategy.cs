@@ -3,6 +3,7 @@ using HtmlAgilityPack;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using MarketMonitorApp.Helpers;
 
 namespace MarketMonitorApp.Services.ProductsStrategy
 {
@@ -26,6 +27,7 @@ namespace MarketMonitorApp.Services.ProductsStrategy
             {
                 var productId = productNode.GetAttributeValue("data-product-id", string.Empty);
                 var productName = productNode.QuerySelector(".prodname").InnerText.Trim();
+                ValidationHelper.ValidateProductName(productName);
                 var priceElement = productNode.QuerySelector(".price em");
 
                 var price = priceElement == null ? "0" : priceElement.InnerText.Trim();

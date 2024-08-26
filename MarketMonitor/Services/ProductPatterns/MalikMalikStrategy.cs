@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Helpers;
 using MarketMonitorApp.Services.ProductsStrategy;
 using System;
 using System.Globalization;
@@ -70,6 +71,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 var productId = productNode.QuerySelector(".djc_price").GetAttributeValue("data-itemid", string.Empty);
                 var productName = productNode.QuerySelector(".djc_title").InnerText.Trim();
+                ValidationHelper.ValidateProductName(productName);
                 var priceElement = productNode.QuerySelector(".djc_price_value");
 
                 var price = priceElement != null ? priceElement.InnerText.Trim() : "0";

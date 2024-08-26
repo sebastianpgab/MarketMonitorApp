@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Helpers;
 using MarketMonitorApp.Services.ProductsStrategy;
 using System;
 using System.Globalization;
@@ -29,6 +30,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 var product_page_url = productNode.QuerySelector(".name a").GetAttributeValue("href", string.Empty);
                 var productId = Regex.Replace(product_page_url, "^/manufacturer/|\\.html$", "");
                 var productName = ExtractProductNameFromLink(product_page_url);
+                ValidationHelper.ValidateProductName(productName);
                 var priceElement = productNode.QuerySelector(".price");
 
                 var price = priceElement == null ? "0" : priceElement.InnerText.Trim();

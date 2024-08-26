@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Helpers;
 using MarketMonitorApp.Services.ProductsStrategy;
 using Microsoft.AspNetCore.Server.IIS.Core;
 using System;
@@ -57,10 +58,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 var linkHtml = productNode.ProdName.QuerySelector("a").GetAttributeValue("href", string.Empty);
                 var productId = GetProductId(linkHtml);
                 var productNameNode = productNode.ProdName.InnerText.Trim();
-                if(productNameNode == null || productNameNode == string.Empty)
-                {
-                    throw new NullReferenceException("Product name node is null or empty.");
-                }
+                ValidationHelper.ValidateProductName(productNameNode);
                 var priceElement = productNode.ProdPrice.QuerySelector(".flex .flex .text-xl");
 
                 var price = priceElement != null ? priceElement.InnerText.Trim() : "0";

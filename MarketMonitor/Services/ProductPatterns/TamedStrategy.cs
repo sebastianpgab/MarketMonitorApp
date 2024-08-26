@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Helpers;
 using MarketMonitorApp.Services.ProductsStrategy;
 using System;
 using System.Globalization;
@@ -72,6 +73,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 var productId = productNode.QuerySelector(".leo-more-info").GetAttributeValue("data-idproduct", string.Empty);
                 var productNameNode = productNode.QuerySelector(".product-title a").GetAttributeValue("href", string.Empty);
                 var productName = ExtractProductNameFromLink(productNameNode);
+                ValidationHelper.ValidateProductName(productName);
                 var priceElement = productNode.QuerySelector(".price span[itemprop='price']");
 
                 var price = priceElement == null ? "0" : priceElement.InnerText.Trim();

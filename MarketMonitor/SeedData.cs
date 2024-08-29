@@ -41,23 +41,18 @@ public class SeedData
                     {
                         new Category
                         {
-                            Name = "Lornetki",
-                            LinkToCategory = "https://deltaoptical.pl/lornetki"
+                            Name = "Pulsar",
+                            LinkToCategory = "https://deltaoptical.pl/pulsar/page:"
                         },
                         new Category
                         {
-                           Name = "Termowizory",
-                           LinkToCategory = "https://deltaoptical.pl/termowizory"
+                           Name = "Delta Optical",
+                           LinkToCategory = "https://deltaoptical.pl/delta-optical/page:"
                         },
                         new Category
                         {
-                           Name = "Lunety celownicze",
-                           LinkToCategory = "https://deltaoptical.pl/lunety-celownicze"
-                        },
-                        new Category
-                        {
-                           Name = "Lunety obserwacyjne",
-                           LinkToCategory = "https://deltaoptical.pl/lunety-obserwacyjne"
+                           Name = "Delta",
+                           LinkToCategory = "https://deltaoptical.pl/delta/page:"
                         }
                     }
                 },

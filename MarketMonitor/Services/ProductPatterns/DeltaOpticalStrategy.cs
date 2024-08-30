@@ -25,37 +25,25 @@ namespace MarketMonitorApp.Services.ProductPatterns
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
             return null;
-
         }
 
-        public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)
+        public int GetLastPageNumber(IHtmlWebAdapter webAdapter, string url)
         {
-            var document = web.Load(baseUrl);
-            var paginatorResult = document.DocumentNode.QuerySelector(".paginator-info").InnerText;
+            var htmlDocument = webAdapter.Load(url);
+            var paginatorInfoText = htmlDocument.DocumentNode.QuerySelector(".paginator-info").InnerText;
 
-            if (!string.IsNullOrEmpty(paginatorResult))
+            if (!string.IsNullOrEmpty(paginatorInfoText))
             {
-                bool parseResult = int.TryParse(paginatorResult.Replace("(", "").Replace(")", "").Trim(), out int numberOfProducts);
-                if(parseResult == true)
+                bool isParsedSuccessfully = int.TryParse(paginatorInfoText.Replace("(", "").Replace(")", "").Trim(), out int totalProductsCount);
+                if (isParsedSuccessfully)
                 {
-                    double pages = numberOfProducts / 12;
-                    var modulo = pages % 2;
-                    if(modulo != 0)
-                    {
-                        int allpages = ((int)pages);
-                        return allpages;
-                    }
-                    else
-                    {
-                        return ((int)pages);
-                    }
-
+                    double totalPages = Math.Ceiling(totalProductsCount / 12.0);
+                    return (int)totalPages;
                 }
             }
             return 1;
         }
 
-    
         public decimal CleanPrice(string price)
         {
             if (string.IsNullOrWhiteSpace(price))

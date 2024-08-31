@@ -24,7 +24,31 @@ namespace MarketMonitorApp.Services.ProductPatterns
         }
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            return null;
+            var url = baseUrl + currentPage;
+            var documentHtml = _htmlWeb.Load(baseUrl);
+            var prodcuts = documentHtml.DocumentNode.QuerySelectorAll(".product-box");
+            var products = new List<Product>();
+
+            foreach ( var prodcut in prodcuts)
+            {
+                var productId = prodcut.GetAttributeValue("data-product-id", string.Empty);
+                var productName = prodcut.QuerySelector(".product-name").InnerText.Trim();
+                ValidationHelper.ValidateProductName(productName);
+                var priceElement = prodcut.QuerySelector(".price");
+
+                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
+
+                var newProduct = new Product();
+                newProduct.IdProduct = productId;
+                newProduct.Name = productName;
+                newProduct.Price = CleanPrice(price);
+
+                if (!products.Any(p => p.IdProduct == newProduct.IdProduct))
+                {
+                    products.Add(newProduct);
+                }
+            }
+            return products;
         }
 
         public int GetLastPageNumber(IHtmlWebAdapter webAdapter, string url)

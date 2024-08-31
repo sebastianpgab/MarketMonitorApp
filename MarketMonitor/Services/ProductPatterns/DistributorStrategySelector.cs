@@ -29,7 +29,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     }
                 case ("Delta Optical"):
                     {
-                        return new DeltaOpticalStrategy();
+                        return new DeltaOpticalStrategy(_htmlWeb);
                     }
                 case ("Szuster"):
                     {

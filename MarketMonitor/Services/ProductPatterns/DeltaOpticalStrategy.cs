@@ -24,31 +24,112 @@ namespace MarketMonitorApp.Services.ProductPatterns
         }
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
-            var url = baseUrl + currentPage;
-            var documentHtml = _htmlWeb.Load(baseUrl);
-            var prodcuts = documentHtml.DocumentNode.QuerySelectorAll(".product-box");
-            var products = new List<Product>();
+            var pageUrl = baseUrl + currentPage; ;
+            var service = ChromeDriverService.CreateDefaultService();
+            var productsList = new List<Product>();
+            var options = new ChromeOptions();
 
-            foreach ( var prodcut in prodcuts)
+            service.SuppressInitialDiagnosticInformation = true;
+            service.HideCommandPromptWindow = true;
+            options.AddArguments("headless");
+
+            using (var driver = new ChromeDriver(service, options))
             {
-                var productId = prodcut.GetAttributeValue("data-product-id", string.Empty);
-                var productName = prodcut.QuerySelector(".product-name").InnerText.Trim();
-                ValidationHelper.ValidateProductName(productName);
-                var priceElement = prodcut.QuerySelector(".price");
-
-                var price = priceElement == null ? "0" : priceElement.InnerText.Trim();
-
-                var newProduct = new Product();
-                newProduct.IdProduct = productId;
-                newProduct.Name = productName;
-                newProduct.Price = CleanPrice(price);
-
-                if (!products.Any(p => p.IdProduct == newProduct.IdProduct))
+                try
                 {
-                    products.Add(newProduct);
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                    driver.Navigate().GoToUrl(pageUrl);
+                    IJavaScriptExecutor jsExecutor = (IJavaScriptExecutor)driver;
+                    wait.Until(driver => (string)jsExecutor.ExecuteScript("return document.readyState") == "complete");
+
+                    // Akceptacja plików cookie za pomocą JavaScript
+                    AkcceptCookieFiles(wait, driver, jsExecutor);
+
+                    // Symulacja przewijania strony
+                    var products = SimulateScroll(wait, driver, jsExecutor);
+
+                    foreach (var productElement in products)
+                    {
+                        var productId = productElement.GetAttribute("data-product-id");
+                        var productName = productElement.FindElement(By.CssSelector("h2.product-name > a")).GetAttribute("title").Trim();
+                        var priceElement = productElement.FindElement(By.CssSelector(".price"));
+
+                        var price = priceElement == null ? "0" : priceElement.Text.Trim();
+
+                        var product = new Product
+                        {
+                            IdProduct = productId,
+                            Name = productName,
+                            Price = CleanPrice(price)
+                        };
+
+                        if (!productsList.Any(p => p.IdProduct == product.IdProduct))
+                        {
+                            productsList.Add(product);
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Fail: " + ex.Message);
+                }
+                finally
+                {
+                    driver.Quit();
                 }
             }
-            return products;
+
+            return productsList;
+        }
+
+        private void AkcceptCookieFiles(WebDriverWait wait, ChromeDriver driver, IJavaScriptExecutor jsExecutor)
+        {
+            try
+            {
+                var acceptCookiesButton = wait.Until(driver => driver.FindElement(By.CssSelector(".btn.btn-primary[data-type='accept-cookies-button']")));
+                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+                jsExecutor.ExecuteScript("arguments[0].click();", acceptCookiesButton);
+                Console.WriteLine("Cookie files was accepted");
+            }
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("There was not baner with cookie files");
+            }
+        }
+
+        private ReadOnlyCollection<IWebElement> SimulateScroll(WebDriverWait wait, ChromeDriver driver, IJavaScriptExecutor jsExecutor)
+        {
+            int numberOfItems = 0;
+            int newNumberOfItems = 0;
+            ReadOnlyCollection<IWebElement> products = null;
+            const int maxScrollAttempts = 2; // Liczba maksymalnych prób przewijania
+            int scrollAttempts = 0;
+
+            while (scrollAttempts < maxScrollAttempts)
+            {
+                products = driver.FindElements(By.CssSelector(".product-box"));
+                newNumberOfItems = products.Count;
+
+                if (newNumberOfItems == numberOfItems)
+                {
+                    scrollAttempts++;
+                    if (scrollAttempts == 2)
+                    {
+                        return products;
+                    }
+                }
+                else
+                {
+                    scrollAttempts = 0;
+                    numberOfItems = newNumberOfItems;
+                }
+
+                jsExecutor.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
+                System.Threading.Thread.Sleep(2000);
+                wait.Until(driver => (string)jsExecutor.ExecuteScript("return document.readyState") == "complete");
+            }
+            return null;
         }
 
         public int GetLastPageNumber(IHtmlWebAdapter webAdapter, string url)

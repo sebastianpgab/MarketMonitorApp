@@ -54,7 +54,13 @@ namespace MarketMonitorApp.Services.ProductPatterns
                         var productName = productElement.FindElement(By.CssSelector("h2.product-name > a")).GetAttribute("title").Trim();
                         var priceElement = productElement.FindElement(By.CssSelector(".price"));
 
-                        var price = priceElement == null ? "0" : priceElement.Text.Trim();
+                        string price = priceElement?.Text?.Trim() ?? "0";
+
+                        if (string.IsNullOrEmpty(price) || price == "0")
+                        {
+                            var discountPriceElement = productElement.FindElement(By.CssSelector(".discount-price"));
+                            price = discountPriceElement?.Text?.Trim() ?? "0";
+                        }
 
                         var product = new Product
                         {
@@ -126,7 +132,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 }
 
                 jsExecutor.ExecuteScript("window.scrollTo(0, document.body.scrollHeight);");
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(500);
                 wait.Until(driver => (string)jsExecutor.ExecuteScript("return document.readyState") == "complete");
             }
             return null;

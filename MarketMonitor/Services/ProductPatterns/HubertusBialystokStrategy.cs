@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MarketMonitorApp.Entities;
+using MarketMonitorApp.Helpers;
 using MarketMonitorApp.Services.ProductsStrategy;
 using System;
 using System.Globalization;
@@ -29,6 +30,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 var productId = productNode.QuerySelector(".abs-catalog-index").InnerText.Trim();
                 var productName = productNode.QuerySelector(".abs-product-name").InnerText.Trim();
+                ValidationHelper.ValidateProductName(productName);
                 var priceElement = productNode.QuerySelector(".abs-item-price-amount");
 
                 var price = priceElement == null ? "0" : priceElement.InnerText.Trim();

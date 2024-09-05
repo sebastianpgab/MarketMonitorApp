@@ -96,9 +96,8 @@ namespace MarketMonitorTests
         public void GetLastPageNumber_ShouldReturnCorrectLastPageNumber_WhenHtmlIsValid(string html, int pageNumber)
         {
             //Arrange
-            HtmlDocument htmlDocument = new HtmlDocument();
-            htmlDocument.LoadHtml(html);
-            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(htmlDocument);
+            _htmlDocument.LoadHtml(html);
+            _mockHtmlWebAdapter.Setup(p => p.Load(It.IsAny<string>())).Returns(_htmlDocument);
 
             //Act
             var result = _hubertusBialystokStrategy.GetLastPageNumber(_mockHtmlWebAdapter.Object, "");

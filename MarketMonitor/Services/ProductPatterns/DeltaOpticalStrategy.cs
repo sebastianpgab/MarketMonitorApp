@@ -74,7 +74,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                             productsList.Add(product);
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {

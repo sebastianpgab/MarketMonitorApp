@@ -69,17 +69,18 @@ namespace MarketMonitorApp.Services
         {
             var productsTab = LastUpdatedProducts(actualization, category);
             if (productsTab == null) return null;
-
+            bool flag = true;
             var latestUpdatedProducts = actualization.Products.ToList();
             List<Product> comparedProducts = new List<Product>();
 
             var productsTabIds = new HashSet<string>(productsTab.Select(p => p.IdProduct));
 
+
             foreach (var product in latestUpdatedProducts)
             {
                 if (!productsTabIds.Contains(product.IdProduct))
                 {
-                    product.IsNew = true;   
+                    product.IsNew = true;
                     comparedProducts.Add(product);
                     _context.SaveChanges();
                 }
@@ -90,12 +91,27 @@ namespace MarketMonitorApp.Services
                     {
                         comparedProducts.Add(product);
                     }
+                    else if (flag == true)
+                    {
+                        IsProductDeleted(productsTab, latestUpdatedProducts, comparedProducts);
+                        flag = false;
+                    }
                 }
             }
             return comparedProducts;
         }
-
-
+        public void IsProductDeleted(List<Product> oldProducts, List<Product> newProdcuts, List<Product> comparedProducts)
+        {
+            foreach (var product in oldProducts)
+            {
+                if (!newProdcuts.Select(p => p.IdProduct).Contains(product.IdProduct))
+                {
+                    product.IsNew = false;
+                    product.IsDeleted = true;
+                    comparedProducts.Add(product);
+                }
+            }
+        }
 
         public bool ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization, string categoryName)
         {

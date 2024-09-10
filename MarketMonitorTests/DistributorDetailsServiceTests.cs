@@ -1,5 +1,6 @@
 ﻿using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace MarketMonitorTests
     {
         private readonly DistributorDetailsService _distributorDetailsService;
         private readonly Mock<MarketMonitorDbContext> _marketMonitorDbContext;
+
         public DistributorDetailsServiceTests()
         {
             _marketMonitorDbContext = new Mock<MarketMonitorDbContext>();
@@ -52,5 +54,36 @@ namespace MarketMonitorTests
             Assert.Empty(comparedProducts);
         }
 
+        [Fact]
+        public void CompareProducts_WhenLastUpdateIsEmpty_ShouldReturnAllNewProduts()
+        {
+            // Arrange
+            var category = new Category { Id = 1, Name = "TestCategory" };
+
+            var actualization = new Actualization
+            {
+                Products = new List<Product>
+            {
+                new Product { IdProduct = "1", Price = 100 },
+                new Product { IdProduct = "2", Price = 200 }
+            }
+            };
+
+            var lastUpdatedProducts = new List<Product>
+        {
+            new Product { IdProduct = "3", Price = 150 }
+        };
+
+            var mockProductComparer = new Mock<DistributorDetailsService>(_marketMonitorDbContext.Object);
+            mockProductComparer
+                .Setup(pc => pc.LastUpdatedProducts(It.IsAny<Actualization>(), It.IsAny<Category>()))
+                .Returns(lastUpdatedProducts);
+
+            // Act
+            var result = mockProductComparer.Object.CompareProducts(actualization, category);
+
+            // Assert
+            Assert.NotNull(result);
+        }
     }
 }

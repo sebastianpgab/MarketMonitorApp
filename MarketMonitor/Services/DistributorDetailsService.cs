@@ -139,7 +139,7 @@ namespace MarketMonitorApp.Services
         }
 
         
-        public List<Product> LastUpdatedProducts(Actualization actualization, Category category)
+        public virtual List<Product> LastUpdatedProducts(Actualization actualization, Category category)
         {
             var actualizations = _context.Actualizations.Max(p => p.Id);
 

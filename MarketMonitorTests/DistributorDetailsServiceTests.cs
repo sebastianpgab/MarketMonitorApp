@@ -15,18 +15,20 @@ namespace MarketMonitorTests
     {
         private readonly DistributorDetailsService _distributorDetailsService;
         private readonly Mock<MarketMonitorDbContext> _marketMonitorDbContext;
+        private readonly Mock<DistributorDetailsService> _distributorDetailsServiceMocked;
 
         public DistributorDetailsServiceTests()
         {
             _marketMonitorDbContext = new Mock<MarketMonitorDbContext>();
             _distributorDetailsService = new DistributorDetailsService(_marketMonitorDbContext.Object);
+            _distributorDetailsServiceMocked = new Mock<DistributorDetailsService>(_marketMonitorDbContext.Object);
         }
 
         [Fact]
         public void IsProductDeleted_WhenProductIsMarkedAsDeleted_ShouldSetIsDeletedAndUnsetIsNew()
         {
             //Arrange
-            List<Product> oldProducts = new List<Product>() { new Product { Id = 1, IdProduct = "1", IsNew = true, IsDeleted = false}};
+            List<Product> oldProducts = new List<Product>() { new Product { Id = 1, IdProduct = "1", IsNew = true, IsDeleted = false } };
             List<Product> newProducts = new List<Product>();
             List<Product> comparedProducts = new List<Product>();
 
@@ -55,7 +57,7 @@ namespace MarketMonitorTests
         }
 
         [Fact]
-        public void CompareProducts_WhenLastUpdateIsEmpty_ShouldReturnAllNewProduts()
+        public void CompareProducts_WhenNewProductIsAdded_ShouldReturnAllNewProducts()
         {
             // Arrange
             var category = new Category { Id = 1, Name = "TestCategory" };
@@ -65,25 +67,140 @@ namespace MarketMonitorTests
                 Products = new List<Product>
             {
                 new Product { IdProduct = "1", Price = 100 },
-                new Product { IdProduct = "2", Price = 200 }
+                new Product { IdProduct = "2", Price = 200 },
+                new Product { IdProduct = "3", Price = 300 },
+                new Product { IdProduct = "4", Price = 300 }
+
             }
             };
 
             var lastUpdatedProducts = new List<Product>
-        {
-            new Product { IdProduct = "3", Price = 150 }
-        };
+            {
+            new Product { IdProduct = "1", Price = 100 },
+            new Product { IdProduct = "2", Price = 200 }
+            };
 
-            var mockProductComparer = new Mock<DistributorDetailsService>(_marketMonitorDbContext.Object);
-            mockProductComparer
+            _distributorDetailsServiceMocked
                 .Setup(pc => pc.LastUpdatedProducts(It.IsAny<Actualization>(), It.IsAny<Category>()))
                 .Returns(lastUpdatedProducts);
 
             // Act
-            var result = mockProductComparer.Object.CompareProducts(actualization, category);
+            var result = _distributorDetailsServiceMocked.Object.CompareProducts(actualization, category);
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Equal("3", result[0].IdProduct);
+            Assert.False(result[0].IsDeleted);
+            Assert.True(result[0].IsNew);
+
+            Assert.Equal("4", result[1].IdProduct);
+            Assert.False(result[1].IsDeleted);
+            Assert.True(result[1].IsNew);
+
+
         }
+
+        [Fact]
+        public void CompareProducts_WhenNewProductIsDeleted_ShouldReturnAllDeletedProducts()
+        {
+            //Arrange
+            var category = new Category { Id = 1, Name = "TestCategory" };
+
+            var actualization = new Actualization
+            {
+                Products = new List<Product>
+            {
+                new Product { IdProduct = "1", Price = 100 },
+                new Product { IdProduct = "2", Price = 200 },
+
+            }
+            };
+
+            var lastUpdatedProducts = new List<Product>
+            {
+                new Product { IdProduct = "1", Price = 100 },
+                new Product { IdProduct = "2", Price = 200 },
+                new Product { IdProduct = "3", Price = 300 },
+                new Product { IdProduct = "4", Price = 300 }
+            };
+
+            _distributorDetailsServiceMocked.Setup(p => p.LastUpdatedProducts(It.IsAny<Actualization>(), It.IsAny<Category>())).Returns(lastUpdatedProducts);
+
+            //Act
+            var result = _distributorDetailsServiceMocked.Object.CompareProducts(actualization, category);
+
+            //Assert
+            Assert.NotEmpty(result);
+            Assert.Equal("3", result[0].IdProduct);
+            Assert.True(result[0].IsDeleted);
+
+            Assert.Equal("4", result[1].IdProduct);
+            Assert.True(result[1].IsDeleted);
+        }
+
+        [Fact]
+        public void CompareProducts_WhenProductPriceIsChanged_ShouldReturnUpdatedProducts()
+        {
+            //Arrange
+            var category = new Category { Id = 1, Name = "TestCategory" };
+
+            var actualization = new Actualization
+            {
+                Products = new List<Product>
+            {
+                new Product { IdProduct = "1", Price = 100 },
+                new Product { IdProduct = "2", Price = 200 },
+
+            }
+            };
+
+            var lastUpdatedProducts = new List<Product>
+            {
+                new Product { IdProduct = "1", Price = 199 },
+                new Product { IdProduct = "2", Price = 450 },
+            };
+
+            _distributorDetailsServiceMocked.Setup(p => p.LastUpdatedProducts(It.IsAny<Actualization>(), It.IsAny<Category>())).Returns(lastUpdatedProducts);
+
+            //Act
+            var result = _distributorDetailsServiceMocked.Object.CompareProducts(actualization, category);
+
+            //Assert
+            Assert.NotEmpty(result);
+            Assert.False(result[0].IsDeleted);
+            Assert.False(result[0].IsNew);
+            Assert.Equal(100m, result[0].Price);
+
+            Assert.False(result[1].IsDeleted);
+            Assert.False(result[1].IsNew);
+            Assert.Equal(200m, result[1].Price);
+        }
+
+        [Fact]
+        public void CompareProducts_WhenNoChanges_ShouldReturnEmptyList()
+        {
+            //Arrange
+            var category = new Category { Id = 1, Name = "TestCategory" };
+
+            var actualization = new Actualization
+            {
+                Products = new List<Product> { }
+            };
+
+            var lastUpdatedProducts = new List<Product>
+            {
+                new Product { IdProduct = "1", Price = 199 },
+                new Product { IdProduct = "2", Price = 450 },
+            };
+
+            _distributorDetailsServiceMocked.Setup(p => p.LastUpdatedProducts(It.IsAny<Actualization>(), It.IsAny<Category>())).Returns(lastUpdatedProducts);
+
+            //Act
+            var result = _distributorDetailsServiceMocked.Object.CompareProducts(actualization, category);
+
+            //Assert
+            Assert.Empty(result);
+        }
+
     }
 }

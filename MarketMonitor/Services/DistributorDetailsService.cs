@@ -15,7 +15,7 @@ namespace MarketMonitorApp.Services
         Distributor GetDistributorByName(string name);
         Actualization AddActualization(List<Product> products, Distributor distributor, Category category);
         List<Product> CompareProducts(Actualization actualization, Category category);
-        bool ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization, string categoryName);
+        bool ExportProductsToCsv(List<Product> comparedProdcuts, Actualization actualization, string categoryName, string pathToSaveFile);
         public List<Product> LastUpdatedProducts(Actualization actualization, Category category);
         public Category GetCategoryByLink(string link);
 
@@ -100,6 +100,7 @@ namespace MarketMonitorApp.Services
             }
             return comparedProducts;
         }
+
         public void IsProductDeleted(List<Product> oldProducts, List<Product> newProdcuts, List<Product> comparedProducts)
         {
             foreach (var product in oldProducts)
@@ -113,7 +114,7 @@ namespace MarketMonitorApp.Services
             }
         }
 
-        public bool ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization, string categoryName)
+        public bool ExportProductsToCsv(List<Product> comparedProducts, Actualization actualization, string categoryName, string pathToSaveFile)
         {
             if (comparedProducts == null || comparedProducts.Count == 0)
             {
@@ -122,13 +123,11 @@ namespace MarketMonitorApp.Services
 
             var distributorName = actualization.Distributor.Name;
 
-            string filePath = @"C:\Users\damia\Desktop\xx";
-
             DateTime currentData = DateTime.Now;
 
             string currentDataConverted = currentData.ToString("dd MM yyyy__HH-mm-ss");
             string fileName = $"{distributorName}-{categoryName}-{currentDataConverted}-products.csv";
-            string fullPath = Path.Combine(filePath, fileName);
+            string fullPath = Path.Combine(pathToSaveFile, fileName);
 
             using (var writer = new StreamWriter(fullPath))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -138,7 +137,6 @@ namespace MarketMonitorApp.Services
             return true;
         }
 
-        
         public virtual List<Product> LastUpdatedProducts(Actualization actualization, Category category)
         {
             var actualizations = _context.Actualizations.Max(p => p.Id);
@@ -146,7 +144,7 @@ namespace MarketMonitorApp.Services
             if (actualizations >= 1)
             {
                 var lastActualization = _context.Actualizations
-                    .Include(p => p.Products)  
+                    .Include(p => p.Products)
                     .Where(p => p.DistributorId == actualization.DistributorId && p.CategoryId == category.Id)
                     .OrderByDescending(p => p.Id)
                     .Skip(1) // Pomija ostatni dodany element, czyli bierze przedostatni
@@ -157,7 +155,6 @@ namespace MarketMonitorApp.Services
                     return lastActualization.Products.ToList();
                 }
             }
-
             return new List<Product>();
         }
     }

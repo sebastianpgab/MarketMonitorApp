@@ -20,22 +20,28 @@ namespace MarketMonitorApp.Pages
             DatesActualizations = GetFormattedUniqueDates();
         }
 
-        //To improve
         public IActionResult OnPost(string selectedDate)
         {
             if (!string.IsNullOrEmpty(selectedDate))
             {
-                // Logika usuniêcia aktualizacji na podstawie wybranej daty
-                var actualizationToRemove = _marketMonitorDbContext.Actualizations
-                    .Select(a => a.LastActualization.ToString("d", CultureInfo.InvariantCulture)).ToList();
+                var actualization = _marketMonitorDbContext.Actualizations
+                    .Where(a => a.LastActualization.Date == DateTime.ParseExact(selectedDate, "MM/dd/yyyy", CultureInfo.InvariantCulture).Date)
+                    .ToList();
 
-                var x = actualizationToRemove.FirstOrDefault(p => p.Equals(selectedDate));
-
-                if (actualizationToRemove != null)
+                if (actualization.Any())
                 {
-                    //_marketMonitorDbContext.Actualizations.Remove(actualizationToRemove);
-                    //_marketMonitorDbContext.SaveChanges();
+                    _marketMonitorDbContext.Actualizations.RemoveRange(actualization);
+                    _marketMonitorDbContext.SaveChanges();
+                    TempData["SuccessMessage"] = "Akcja zosta³a wykonana pomyœlnie!";
                 }
+                else
+                {
+                    TempData["ErrorMessage"] = "Nie znaleziono wpisów do usuniêcia!";
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Proszê wybraæ datê!";
             }
 
             return RedirectToPage();

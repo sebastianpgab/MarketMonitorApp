@@ -1,12 +1,10 @@
 ﻿@page
 @model DistributorsModel
 
-<h2>Lista Dystrybutorów</h2>
-
 
 <form method="post" style="display: flex;  align-items: center;">
     <div class="form-group">
-        <select id="dateSelector" name="selectedDate" class="form-control" style="margin-right: 10px;">
+        <select id="dateSelector" name="selectedDate" class="form-control" style="margin-right: 10px; ">
             <option value="">---Wybierz datę aktualizacji która zostanie usunięta---</option>
             @foreach (var date in Model.DatesActualizations)
             {
@@ -17,8 +15,25 @@
     <div class="form-group">
         <button type="submit" class="btn btn-danger">Usuń</button>
     </div>
+
 </form>
 
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<h2>Lista Dystrybutorów</h2>
 
 <table class="table table-striped">
     <thead>

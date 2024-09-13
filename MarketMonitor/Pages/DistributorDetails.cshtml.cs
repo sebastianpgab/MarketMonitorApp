@@ -1,6 +1,7 @@
 using MarketMonitorApp;
 using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -29,12 +30,14 @@ public class DistributorDetailsModel : PageModel
     public List<Category> Categories { get; set; }
     [BindProperty]
     public List<string> SelectedOptions { get; set; }
+    [BindProperty]
+    public string InputText { get; set; }
 
     public void OnGet()
     {
         Distributor = _distributorDetailsService.GetDistributorByName(DistributorName);
         Categories = Distributor.Categories.ToList();
-
+        InputText = @"C:\Users\SPiatkowski\Desktop\plikiTestowe";
     }
 
     public void OnPost()
@@ -57,10 +60,7 @@ public class DistributorDetailsModel : PageModel
             var category = _distributorDetailsService.GetCategoryByLink(options[0]);
             var actualization = _distributorDetailsService.AddActualization(products, Distributor, category);
             var comparedProducts = _distributorDetailsService.CompareProducts(actualization, category);
-            _distributorDetailsService.ExportProductsToCsv(comparedProducts, actualization, category.Name);
+            _distributorDetailsService.ExportProductsToCsv(comparedProducts, actualization, category.Name, InputText);
         }
-
-
-
     }
 }

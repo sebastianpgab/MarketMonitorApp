@@ -77,6 +77,4 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         }
     }
-
-
 }

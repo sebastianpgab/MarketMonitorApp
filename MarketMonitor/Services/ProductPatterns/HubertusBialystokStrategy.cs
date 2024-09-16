@@ -22,7 +22,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
             string replacement = currentPage.ToString();
             string modifiedUrl = Regex.Replace(baseUrl, pattern, replacement);
             var document = _htmlWeb.Load(modifiedUrl);
-
             var products = new List<Product>();
             var productNodes = document.DocumentNode.QuerySelectorAll(".abs-layout-product-gallery");
 
@@ -62,7 +61,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 lastPageNumber = int.Parse(lastPageNumberString);
             }
-
             return lastPageNumber;
         }
 

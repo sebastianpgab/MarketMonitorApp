@@ -84,7 +84,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     driver.Quit();
                 }
             }
-
             return productsList;
         }
 
@@ -108,7 +107,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             int numberOfItems = 0;
             int newNumberOfItems = 0;
             ReadOnlyCollection<IWebElement> products = null;
-            const int maxScrollAttempts = 2; // Liczba maksymalnych prób przewijania
+            const int maxScrollAttempts = 2;
             int scrollAttempts = 0;
 
             while (scrollAttempts < maxScrollAttempts)

@@ -57,7 +57,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 Console.WriteLine($"Error occurred: {ex.Message}");
             }
             return 1;
-
         }
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)

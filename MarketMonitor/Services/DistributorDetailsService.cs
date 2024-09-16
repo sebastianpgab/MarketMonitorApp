@@ -75,7 +75,6 @@ namespace MarketMonitorApp.Services
 
             var productsTabIds = new HashSet<string>(productsTab.Select(p => p.IdProduct));
 
-
             foreach (var product in latestUpdatedProducts)
             {
                 if (!productsTabIds.Contains(product.IdProduct))

@@ -94,7 +94,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return link.Substring(lastSlashIndex + 1, commaIndex - lastSlashIndex - 1);
         }
 
-
         private string UpdatePageNumberInLink(string url, int currentPage)
         {
             int queryStartIndex = url.IndexOf('?');
@@ -137,7 +136,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     return targetButton.InnerText;
                 }
             }
-
             return null;
         }
 

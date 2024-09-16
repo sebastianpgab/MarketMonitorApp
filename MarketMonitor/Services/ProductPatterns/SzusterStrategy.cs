@@ -45,7 +45,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     products.Add(newProduct);
                 }
             }
-
             return products;
         }
 
@@ -61,8 +60,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 return lastPageNumber;
             }
-
-            return 1; // Brak paginacji, więc domyślnie 1
+            return 1;
         }
 
         private int ExtractPageNumberFromHref(string href)
@@ -74,7 +72,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 return pageNumber;
             }
-
             return 1;
         }
 
@@ -94,7 +91,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 return 0;
             }
-
             string cleanPrice = Regex.Replace(price, @"\s+|zł", "").Replace(",", ".");
 
             if (decimal.TryParse(cleanPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal newPrice))

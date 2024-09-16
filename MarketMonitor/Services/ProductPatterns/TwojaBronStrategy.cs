@@ -42,7 +42,6 @@ namespace MarketMonitorApp.Services.ProductsStrategy
                     products.Add(newProduct);
                 }
             }
-
             return products;
         }
 
@@ -62,7 +61,6 @@ namespace MarketMonitorApp.Services.ProductsStrategy
                     lastPageNumber = pageNumber;
                 }
             }
-
             return lastPageNumber;
         }
 

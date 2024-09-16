@@ -85,7 +85,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     products.Add(newProduct);
                 }
             }
-
             return products;
         }
     }

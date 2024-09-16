@@ -2,12 +2,12 @@
 {
     public static class ValidationHelper
     {
-       public static void ValidateProductName(string productName)
+        public static void ValidateProductName(string productName)
         {
             if (string.IsNullOrEmpty(productName))
             {
-                throw new NullReferenceException("Product name node is null or empty.");
+                throw new ArgumentException("Product name cannot be null or empty.", nameof(productName));
             }
-       }
+        }
     }
 }

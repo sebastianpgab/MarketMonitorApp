@@ -24,10 +24,12 @@ namespace MarketMonitorApp.Services
     public class DistributorDetailsService : IDistributorDetailsService
     {
         private readonly MarketMonitorDbContext _context;
+        private readonly IFileWriter _fileWriter;
 
-        public DistributorDetailsService(MarketMonitorDbContext context)
+        public DistributorDetailsService(MarketMonitorDbContext context, IFileWriter fileWriter)
         {
             _context = context;
+            _fileWriter = fileWriter;
         }
 
         public Distributor GetDistributorByName(string name)
@@ -128,11 +130,8 @@ namespace MarketMonitorApp.Services
             string fileName = $"{distributorName}-{categoryName}-{currentDataConverted}-products.csv";
             string fullPath = Path.Combine(pathToSaveFile, fileName);
 
-            using (var writer = new StreamWriter(fullPath))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                csv.WriteRecords(comparedProducts);
-            }
+            _fileWriter.WriteToFile(fullPath, comparedProducts);
+
             return true;
         }
 

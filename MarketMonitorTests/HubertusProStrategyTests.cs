@@ -178,7 +178,7 @@ namespace MarketMonitorTests
             Action action = () => { _hubertusProStrategy.GetProducts("url", 1); };
 
             //Assert
-            Assert.Throws<NullReferenceException>(action);
+            Assert.Throws<ArgumentException>(action);
         }
 
         [Fact]

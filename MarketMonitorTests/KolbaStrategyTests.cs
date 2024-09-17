@@ -202,7 +202,7 @@ namespace MarketMonitorTests
             Action action = () => { _kolbaStrategy.GetProducts("url", 1); };
 
             //Assert
-            Assert.Throws<NullReferenceException>(action);
+            Assert.Throws<ArgumentException>(action);
         }
 
 

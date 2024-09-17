@@ -16,13 +16,10 @@ builder.Services.AddScoped<IDistributorDetailsService, DistributorDetailsService
 builder.Services.AddScoped<IDistributorStrategy, TwojaBronStrategy>();
 builder.Services.AddScoped<IDistributorStrategySelector, DistributorStrategySelector>();
 builder.Services.AddScoped<IHtmlWebAdapter, HtmlWebAdapter>();
+builder.Services.AddScoped<IFileWriter, FileWriter>();
 builder.Services.AddSingleton<HtmlWeb>();
 
-
-
 builder.Services.AddScoped<IPriceScraper, PriceScraper>();
-
-
 
 var app = builder.Build();
 var scope = app.Services.CreateScope();

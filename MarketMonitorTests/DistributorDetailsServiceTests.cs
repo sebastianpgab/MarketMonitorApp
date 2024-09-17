@@ -1,9 +1,12 @@
-﻿using MarketMonitorApp.Entities;
+﻿using CsvHelper;
+using MarketMonitorApp.Entities;
 using MarketMonitorApp.Services;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,12 +19,14 @@ namespace MarketMonitorTests
         private readonly DistributorDetailsService _distributorDetailsService;
         private readonly Mock<MarketMonitorDbContext> _marketMonitorDbContext;
         private readonly Mock<DistributorDetailsService> _distributorDetailsServiceMocked;
+        private readonly Mock<IFileWriter> _fileWriterMocked;
 
         public DistributorDetailsServiceTests()
         {
+            _fileWriterMocked = new Mock<IFileWriter>();
             _marketMonitorDbContext = new Mock<MarketMonitorDbContext>();
-            _distributorDetailsService = new DistributorDetailsService(_marketMonitorDbContext.Object);
-            _distributorDetailsServiceMocked = new Mock<DistributorDetailsService>(_marketMonitorDbContext.Object);
+            _distributorDetailsService = new DistributorDetailsService(_marketMonitorDbContext.Object, _fileWriterMocked.Object);
+            _distributorDetailsServiceMocked = new Mock<DistributorDetailsService>(_marketMonitorDbContext.Object, _fileWriterMocked.Object);
         }
 
         [Fact]
@@ -96,8 +101,6 @@ namespace MarketMonitorTests
             Assert.Equal("4", result[1].IdProduct);
             Assert.False(result[1].IsDeleted);
             Assert.True(result[1].IsNew);
-
-
         }
 
         [Fact]
@@ -202,5 +205,28 @@ namespace MarketMonitorTests
             Assert.Empty(result);
         }
 
+        [Fact]
+        public void ExportProductsToCsv_ShouldReturnTrue_WhenProductsAreProvided()
+        {
+            // Arrange
+            var products = new List<Product>
+        {
+            new Product { Id = 1, Name = "Product1", Price = 10.0M },
+            new Product { Id = 2, Name = "Product2", Price = 20.0M }
+        };
+            var actualization = new Actualization
+            {
+                Distributor = new Distributor { Name = "TestDistributor" }
+            };
+
+            var categoryName = "TestCategory";
+            var pathToSaveFile = "TestPath";
+
+            // Act
+            var result = _distributorDetailsService.ExportProductsToCsv(products, actualization, categoryName, pathToSaveFile);
+
+            // Assert
+            Assert.True(result);
+        }
     }
 }

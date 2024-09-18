@@ -70,9 +70,18 @@ namespace MarketMonitorApp.Services
         public List<Product> CompareProducts(Actualization actualization, Category category)
         {
             var productsTab = LastUpdatedProducts(actualization, category);
-            if (productsTab == null) return null;
-            bool flag = true;
+            if (productsTab == null || !productsTab.Any())
+            {
+                return new List<Product>();
+            }
+
             var latestUpdatedProducts = actualization.Products.ToList();
+
+            if (!latestUpdatedProducts.Any())
+            {
+                return new List<Product>();
+            }
+
             List<Product> comparedProducts = new List<Product>();
 
             var productsTabIds = new HashSet<string>(productsTab.Select(p => p.IdProduct));
@@ -83,7 +92,6 @@ namespace MarketMonitorApp.Services
                 {
                     product.IsNew = true;
                     comparedProducts.Add(product);
-                    _context.SaveChanges();
                 }
                 else
                 {
@@ -92,21 +100,23 @@ namespace MarketMonitorApp.Services
                     {
                         comparedProducts.Add(product);
                     }
-                    else if (flag == true)
-                    {
-                        IsProductDeleted(productsTab, latestUpdatedProducts, comparedProducts);
-                        flag = false;
-                    }
                 }
             }
+
+            IsProductDeleted(productsTab, latestUpdatedProducts, comparedProducts);
+
+            _context.SaveChanges();
+
             return comparedProducts;
         }
 
         public void IsProductDeleted(List<Product> oldProducts, List<Product> newProdcuts, List<Product> comparedProducts)
         {
+            var newProductIds = new HashSet<string>(newProdcuts.Select(p => p.IdProduct));
+
             foreach (var product in oldProducts)
             {
-                if (!newProdcuts.Select(p => p.IdProduct).Contains(product.IdProduct))
+                if (!newProductIds.Contains(product.IdProduct))
                 {
                     product.IsNew = false;
                     product.IsDeleted = true;

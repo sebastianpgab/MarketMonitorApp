@@ -46,7 +46,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
             var pageUrl = $"{baseUrl}{currentPage}";
             var document = _htmlWeb.Load(pageUrl);
             List<Product> products = new List<Product>();
-            var productNodes = document.DocumentNode.QuerySelectorAll(".product");
+            var productNodes = document.DocumentNode.QuerySelectorAll(".centercol .product");
 
             foreach (var productNode in productNodes)
             {

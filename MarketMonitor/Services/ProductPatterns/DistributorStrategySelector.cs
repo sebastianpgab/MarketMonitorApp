@@ -46,7 +46,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 case ("Kaliber"):
                     {
                         return new KaliberStrategy(_htmlWeb);
-                    } 
+                    }
                 case ("Incorsa"):
                     {
                         return new IncorsaStrategy(_htmlWeb);
@@ -70,6 +70,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 case ("Tamed"):
                     {
                         return new TamedStrategy(_htmlWeb);
+                    }
+                case ("Swarovski"):
+                    {
+                        return new SwarovskiStrategy(_htmlWeb);
                     }
                 default:
                     return null;

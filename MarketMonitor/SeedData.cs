@@ -420,8 +420,41 @@ public class SeedData
                             LinkToCategory = "https://tamed.pl/index.php?fc=module&module=leoproductsearch&controller=productsearch&leoproductsearch_static_token=66cc3dc6468290af5fe3ebc958502f6b&cate=&search_query=x-hog+iluminator&page="
                         },
                     }
-                },
 
+                },
+                 new Distributor
+                {
+                    Name = "Swarovski",
+                    Categories = new List<Category>
+                    {
+                        new Category
+                        {
+                            Name ="Lornetki",
+                            LinkToCategory = "https://www.swarovskioptik.com/pl/pl/lowiectwo/products/binoculars"
+                        },
+                        new Category
+                        {
+                            Name ="Lunety celownicze",
+                            LinkToCategory = "https://www.swarovskioptik.com/pl/pl/lowiectwo/products/rifle-scopes"
+                        },
+                        new Category
+                        {
+                            Name ="Luneta obserwacyjna",
+                            LinkToCategory = "https://www.swarovskioptik.com/pl/pl/lowiectwo/products/spotting-scopes"
+                        },
+                        new Category
+                        {
+                            Name ="Produkty termowizyjne",
+                            LinkToCategory = "https://www.swarovskioptik.com/pl/pl/lowiectwo/products/thermal-imaging-products"
+                        },
+                        new Category
+                        {
+                            Name ="Akcesoria",
+                            LinkToCategory = "https://www.swarovskioptik.com/pl/pl/lowiectwo/products/accessories"
+                        },
+                    }
+
+                },
             };
 
             _marketMonitorDbContext.Distributors.AddRange(distributors);

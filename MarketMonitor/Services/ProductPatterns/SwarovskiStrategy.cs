@@ -3,6 +3,7 @@ using MarketMonitorApp.Services.ProductsStrategy;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium;
+using SeleniumExtras.WaitHelpers;
 
 namespace MarketMonitorApp.Services.ProductPatterns
 {
@@ -17,7 +18,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         public decimal CleanPrice(string price)
         {
-            price = price.Replace("zł", "").Trim();
+            price = price.Substring(0, price.IndexOf(",")).Trim();
             return decimal.Parse(price);
         }
 
@@ -38,6 +39,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 Console.WriteLine("No newsletter banner present");
             }
+        }
+
+        public void ClickSideRightButton(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor jsExecutor)
+        {
+            // Poczekaj aż przycisk będzie widoczny i klikalny
+            var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
+
+            // Kliknij przycisk za pomocą JavaScript (jeśli zwykły Click() nie działa)
+            jsExecutor.ExecuteScript("arguments[0].click();", sideRightButton);
+
+            // Możesz również kliknąć w standardowy sposób:
         }
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
@@ -73,7 +85,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
             {
                 foreach (var categoryElement in categoryElements)
                 {
-                    // Kliknięcie elementu zamiast szukania href
                     try
                     {
                         var clickableElement = categoryElement.FindElement(By.CssSelector("div._picture"));
@@ -106,13 +117,26 @@ namespace MarketMonitorApp.Services.ProductPatterns
         private IEnumerable<Product> NavigateToProducts(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor jsExecutor)
         {
             var products = new List<Product>();
-            var productLinks = driver.FindElements(By.CssSelector(".product-tile a"));
 
-            foreach (var productLink in productLinks)
+            // Zbierz wszystkie elementy, ale przetwarzaj je po indeksie, nie bezpośrednio na elementach DOM
+            var productElements = driver.FindElements(By.CssSelector(".with-image"));
+            int numberOfProducts = productElements.Count;
+
+            for (int i = 0; i < numberOfProducts; i++)
             {
-                string productUrl = productLink.GetAttribute("href");
-                driver.Navigate().GoToUrl(productUrl);
+                // Znajdź element ponownie, by uniknąć błędu StaleElementReferenceException
+                productElements = driver.FindElements(By.CssSelector(".with-image"));
 
+                // Znajdź klikalny element i kliknij na produkt
+                var clickableElement = productElements[i].FindElement(By.CssSelector("div._picture"));
+                jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
+
+                //Poczekaj
+                var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
+
+                sideRightButton.Click();
+
+                // Wydobądź dane produktu po nawigacji
                 var product = new Product
                 {
                     Name = ExtractProductName(driver),
@@ -122,6 +146,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 // Wróć do listy produktów
                 driver.Navigate().Back();
+
+                // Oczekuj na ponowne załadowanie strony z produktami
+                wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
             }
 
             return products;
@@ -131,7 +158,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             try
             {
-                var priceElement = driver.FindElement(By.CssSelector(".price"));
+                var priceElement = driver.FindElement(By.CssSelector("div.js-pdp-primary-action-above-the-fold-area"));
                 string price = priceElement.Text;
                 return CleanPrice(price);
             }
@@ -146,7 +173,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             try
             {
-                var nameElement = driver.FindElement(By.CssSelector(".product-name"));
+                var nameElement = driver.FindElement(By.CssSelector("h1 span"));
                 return nameElement.Text;
             }
             catch (NoSuchElementException)

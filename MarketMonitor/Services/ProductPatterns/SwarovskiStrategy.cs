@@ -87,10 +87,13 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     try
                     {
-                        var clickableElement = categoryElement.FindElement(By.CssSelector("div._picture"));
+                        // Znajdź element tuż przed kliknięciem, aby uniknąć StaleElementReferenceException
+                        var clickableElement = wait.Until(drv => categoryElement.FindElement(By.CssSelector("div._picture")));
+
+                        // Użycie JavaScriptExecutor do kliknięcia na element
                         jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
 
-                        // Poczekaj, aż załaduje się strona
+                        // Poczekaj, aż załaduje się nowa strona
                         System.Threading.Thread.Sleep(500);
 
                         // Sprawdź, czy są produkty na załadowanej stronie
@@ -98,10 +101,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                         // Powrót do poprzedniej strony
                         driver.Navigate().Back();
+
+                        // Błąd!! 
+                        wait.Until(drv => drv.FindElement(By.CssSelector("li.with-image.family")));
                     }
                     catch (NoSuchElementException)
                     {
                         Console.WriteLine("Nie znaleziono elementu do kliknięcia.");
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        Console.WriteLine("Element stał się nieaktualny. Próba ponownego znalezienia elementu.");
                     }
                 }
             }
@@ -139,6 +149,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 // Wydobądź dane produktu po nawigacji
                 var product = new Product
                 {
+                    IdProduct = ExtractIdProduct(driver),
                     Name = ExtractProductName(driver),
                     Price = ExtractProductPrice(driver)
                 };
@@ -182,5 +193,38 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 return string.Empty;
             }
         }
+
+        private string ExtractIdProduct(ChromeDriver driver)
+        {
+            try
+            {
+                var idElement = driver.FindElement(By.CssSelector("li.active a.no-decoration")).GetAttribute("href");
+
+                if (!string.IsNullOrEmpty(idElement))
+                {
+                    var result = idElement.Split('/');
+
+                    return result.Last();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (NoSuchElementException e)
+            {
+                Console.WriteLine($"Element not found: {e.Message}");
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine($"Null reference encountered: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"An unexpected error occurred: {e.Message}");
+            }
+            return null;
+        }
+    
     }
 }

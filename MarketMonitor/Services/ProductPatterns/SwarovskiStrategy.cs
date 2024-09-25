@@ -4,6 +4,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
+using System.Collections.ObjectModel;
 
 namespace MarketMonitorApp.Services.ProductPatterns
 {
@@ -77,48 +78,63 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             var products = new List<Product>();
 
-            // Znalezienie elementów kategorii, np. obrazek lub inny kontener, który prowadzi do szczegółów
-            var categoryElements = driver.FindElements(By.CssSelector("li.with-image.family"));
-
-            // Sprawdź, czy są zagnieżdżone kategorie lub serie
-            if (categoryElements.Count > 0)
+            // Funkcja do dynamicznego znajdowania elementów kategorii
+            Func<IWebDriver, ReadOnlyCollection<IWebElement>> findCategoryElements = drv =>
             {
-                foreach (var categoryElement in categoryElements)
+                return drv.FindElements(By.CssSelector("li.with-image.family"));
+            };
+
+            // Początkowe znalezienie elementów
+            var categoryElements = findCategoryElements(driver);
+
+            // Użycie pętli for zamiast foreach
+            for (int i = 0; i < categoryElements.Count; i++)
+            {
+                var categoryElement = categoryElements[i];
+                try
                 {
-                    try
-                    {
-                        // Znajdź element tuż przed kliknięciem, aby uniknąć StaleElementReferenceException
-                        var clickableElement = wait.Until(drv => categoryElement.FindElement(By.CssSelector("div._picture")));
+                    AcceptNewsletter(wait, driver, jsExecutor);
 
-                        // Użycie JavaScriptExecutor do kliknięcia na element
-                        jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
+                    // Znalezienie dynamicznie ładowanego elementu
+                    var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
 
-                        // Poczekaj, aż załaduje się nowa strona
-                        System.Threading.Thread.Sleep(500);
+                    // Kliknij przycisk za pomocą JavaScript
+                    jsExecutor.ExecuteScript("arguments[0].click();", sideRightButton);
 
-                        // Sprawdź, czy są produkty na załadowanej stronie
-                        products.AddRange(NavigateToProducts(driver, wait, jsExecutor));
+                    // Ponowne wyszukanie elementu kategorii (dynamicznie ładowany DOM)
+                    categoryElement = wait.Until(driver => driver.FindElement(By.CssSelector("li.with-image.family")));
 
-                        // Powrót do poprzedniej strony
-                        driver.Navigate().Back();
+                    // Znajdź element do kliknięcia, upewniając się, że jest aktualny
+                    var clickableElement = wait.Until(drv => categoryElement.FindElement(By.CssSelector("div._picture")));
 
-                        // Błąd!! 
-                        wait.Until(drv => drv.FindElement(By.CssSelector("li.with-image.family")));
-                    }
-                    catch (NoSuchElementException)
-                    {
-                        Console.WriteLine("Nie znaleziono elementu do kliknięcia.");
-                    }
-                    catch (StaleElementReferenceException)
-                    {
-                        Console.WriteLine("Element stał się nieaktualny. Próba ponownego znalezienia elementu.");
-                    }
+                    // Zapisz URL
+                    string previousUrl = driver.Url;
+
+                    // Kliknięcie dynamicznie załadowanego elementu
+                    jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
+
+                    // Poczekaj na załadowanie nowej strony
+                    wait.Until(driver => driver.Url != previousUrl);
+
+                    // Znajdź produkty na nowej stronie
+                    products.AddRange(NavigateToProducts(driver, wait, jsExecutor));
+
+                    // Powrót do poprzedniej strony
+                    driver.Navigate().GoToUrl(previousUrl);
+
+                    // Ponowne wyszukanie elementów po powrocie na poprzednią stronę
+                    wait.Until(drv => drv.FindElement(By.CssSelector("li.with-image.family")));
                 }
-            }
-            else
-            {
-                // Jeżeli nie ma kategorii, przejdź bezpośrednio do produktów
-                products.AddRange(NavigateToProducts(driver, wait, jsExecutor));
+                catch (StaleElementReferenceException)
+                {
+                    // Jeśli element jest nieaktualny, ponowne wyszukiwanie elementów dynamicznie
+                    Console.WriteLine("Element stał się nieaktualny, ponowne wyszukiwanie.");
+                    categoryElements = findCategoryElements(driver);
+                }
+                catch (NoSuchElementException)
+                {
+                    Console.WriteLine("Nie znaleziono elementu do kliknięcia.");
+                }
             }
 
             return products;

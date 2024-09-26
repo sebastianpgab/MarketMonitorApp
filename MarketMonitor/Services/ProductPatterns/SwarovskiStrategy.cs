@@ -84,25 +84,25 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 return drv.FindElements(By.CssSelector("li.with-image.family"));
             };
 
-            // Początkowe znalezienie elementów
-            var categoryElements = findCategoryElements(driver);
-
             // Użycie pętli for zamiast foreach
-            for (int i = 0; i < categoryElements.Count; i++)
+            for (int i = 0; i < findCategoryElements(driver).Count; i++)
             {
+                var categoryElements = findCategoryElements(driver); // Ponowne pobieranie elementów kategorii
                 var categoryElement = categoryElements[i];
+
                 try
                 {
-                    AcceptNewsletter(wait, driver, jsExecutor);
+                    wait.Timeout = TimeSpan.FromSeconds(10);
+                    var acceptNewsletterButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.swo-css-1eqza22")));
+
+                    jsExecutor.ExecuteScript("arguments[0].click();", acceptNewsletterButton);
+
 
                     // Znalezienie dynamicznie ładowanego elementu
                     var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
 
                     // Kliknij przycisk za pomocą JavaScript
                     jsExecutor.ExecuteScript("arguments[0].click();", sideRightButton);
-
-                    // Ponowne wyszukanie elementu kategorii (dynamicznie ładowany DOM)
-                    categoryElement = wait.Until(driver => driver.FindElement(By.CssSelector("li.with-image.family")));
 
                     // Znajdź element do kliknięcia, upewniając się, że jest aktualny
                     var clickableElement = wait.Until(drv => categoryElement.FindElement(By.CssSelector("div._picture")));
@@ -122,14 +122,14 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     // Powrót do poprzedniej strony
                     driver.Navigate().GoToUrl(previousUrl);
 
-                    // Ponowne wyszukanie elementów po powrocie na poprzednią stronę
-                    wait.Until(drv => drv.FindElement(By.CssSelector("li.with-image.family")));
+                    // Ponowne wyszukanie elementów kategorii po powrocie
+                    wait.Until(drv => findCategoryElements(driver));
                 }
                 catch (StaleElementReferenceException)
                 {
                     // Jeśli element jest nieaktualny, ponowne wyszukiwanie elementów dynamicznie
                     Console.WriteLine("Element stał się nieaktualny, ponowne wyszukiwanie.");
-                    categoryElements = findCategoryElements(driver);
+                    i--; // Powrót do poprzedniego indeksu, aby spróbować ponownie
                 }
                 catch (NoSuchElementException)
                 {
@@ -146,9 +146,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             // Zbierz wszystkie elementy, ale przetwarzaj je po indeksie, nie bezpośrednio na elementach DOM
             var productElements = driver.FindElements(By.CssSelector(".with-image"));
-            int numberOfProducts = productElements.Count;
 
-            for (int i = 0; i < numberOfProducts; i++)
+            for (int i = 0; i < productElements.Count; i++)
             {
                 // Znajdź element ponownie, by uniknąć błędu StaleElementReferenceException
                 productElements = driver.FindElements(By.CssSelector(".with-image"));
@@ -241,6 +240,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
             }
             return null;
         }
-    
+
     }
 }

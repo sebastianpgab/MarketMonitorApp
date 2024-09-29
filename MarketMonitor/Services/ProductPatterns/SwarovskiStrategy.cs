@@ -213,31 +213,43 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             try
             {
+                // Znajdź element zawierający identyfikator produktu
                 var idElement = driver.FindElement(By.CssSelector("li.active a.no-decoration")).GetAttribute("href");
 
-                if (!string.IsNullOrEmpty(idElement))
+                // Sprawdź, czy znaleziony atrybut href nie jest pusty
+                if (string.IsNullOrEmpty(idElement))
                 {
-                    var result = idElement.Split('/');
-
-                    return result.Last();
-                }
-                else
-                {
+                    Console.WriteLine("Href attribute is empty or null.");
                     return null;
                 }
+
+                // Rozdziel URL na części i zwróć ostatni element (id produktu)
+                var urlParts = idElement.Split('/');
+                var productId = urlParts.Last();
+
+                // Zweryfikuj, czy id produktu nie jest puste
+                if (string.IsNullOrEmpty(productId))
+                {
+                    Console.WriteLine("Product ID is empty.");
+                    return null;
+                }
+
+                return productId;
             }
-            catch (NoSuchElementException e)
+            catch (NoSuchElementException ex)
             {
-                Console.WriteLine($"Element not found: {e.Message}");
+                Console.WriteLine($"Element not found: {ex.Message}");
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException ex)
             {
-                Console.WriteLine($"Null reference encountered: {e.Message}");
+                Console.WriteLine($"Null reference encountered: {ex.Message}");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"An unexpected error occurred: {e.Message}");
+                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
             }
+
+            // W przypadku jakiegokolwiek błędu zwracamy null
             return null;
         }
 

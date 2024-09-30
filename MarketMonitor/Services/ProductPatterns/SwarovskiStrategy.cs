@@ -78,16 +78,14 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             var products = new List<Product>();
 
-            // Funkcja do dynamicznego znajdowania elementów kategorii
             Func<IWebDriver, ReadOnlyCollection<IWebElement>> findCategoryElements = drv =>
             {
                 return drv.FindElements(By.CssSelector("li.with-image.family"));
             };
 
-            // Użycie pętli for zamiast foreach
             for (int i = 0; i < findCategoryElements(driver).Count; i++)
             {
-                var categoryElements = findCategoryElements(driver); // Ponowne pobieranie elementów kategorii
+                var categoryElements = findCategoryElements(driver); 
                 var categoryElement = categoryElements[i];
 
                 try
@@ -97,43 +95,33 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                     jsExecutor.ExecuteScript("arguments[0].click();", acceptNewsletterButton);
 
-
-                    // Znalezienie dynamicznie ładowanego elementu
                     var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
 
-                    // Kliknij przycisk za pomocą JavaScript
                     jsExecutor.ExecuteScript("arguments[0].click();", sideRightButton);
 
-                    // Znajdź element do kliknięcia, upewniając się, że jest aktualny
                     var clickableElement = wait.Until(drv => categoryElement.FindElement(By.CssSelector("div._picture")));
 
-                    // Zapisz URL
                     string previousUrl = driver.Url;
 
-                    // Kliknięcie dynamicznie załadowanego elementu
                     jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
 
-                    // Poczekaj na załadowanie nowej strony
                     wait.Until(driver => driver.Url != previousUrl);
 
-                    // Znajdź produkty na nowej stronie
+                    Thread.Sleep(500);
+
                     products.AddRange(NavigateToProducts(driver, wait, jsExecutor));
 
-                    // Powrót do poprzedniej strony
                     driver.Navigate().GoToUrl(previousUrl);
 
-                    // Ponowne wyszukanie elementów kategorii po powrocie
                     wait.Until(drv => findCategoryElements(driver));
                 }
                 catch (StaleElementReferenceException)
                 {
-                    // Jeśli element jest nieaktualny, ponowne wyszukiwanie elementów dynamicznie
-                    Console.WriteLine("Element stał się nieaktualny, ponowne wyszukiwanie.");
-                    i--; // Powrót do poprzedniego indeksu, aby spróbować ponownie
+                    i--; 
                 }
                 catch (NoSuchElementException)
                 {
-                    Console.WriteLine("Nie znaleziono elementu do kliknięcia.");
+                    Console.WriteLine("No clickable element was found.");
                 }
             }
 
@@ -144,24 +132,19 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             var products = new List<Product>();
 
-            // Zbierz wszystkie elementy, ale przetwarzaj je po indeksie, nie bezpośrednio na elementach DOM
             var productElements = driver.FindElements(By.CssSelector(".with-image"));
 
             for (int i = 0; i < productElements.Count; i++)
             {
-                // Znajdź element ponownie, by uniknąć błędu StaleElementReferenceException
                 productElements = driver.FindElements(By.CssSelector(".with-image"));
 
-                // Znajdź klikalny element i kliknij na produkt
                 var clickableElement = productElements[i].FindElement(By.CssSelector("div._picture"));
                 jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
 
-                //Poczekaj
                 var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
 
                 sideRightButton.Click();
 
-                // Wydobądź dane produktu po nawigacji
                 var product = new Product
                 {
                     IdProduct = ExtractIdProduct(driver),
@@ -170,10 +153,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 };
                 products.Add(product);
 
-                // Wróć do listy produktów
                 driver.Navigate().Back();
-
-                // Oczekuj na ponowne załadowanie strony z produktami
                 wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
             }
 
@@ -213,21 +193,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             try
             {
-                // Znajdź element zawierający identyfikator produktu
                 var idElement = driver.FindElement(By.CssSelector("li.active a.no-decoration")).GetAttribute("href");
 
-                // Sprawdź, czy znaleziony atrybut href nie jest pusty
                 if (string.IsNullOrEmpty(idElement))
                 {
                     Console.WriteLine("Href attribute is empty or null.");
                     return null;
                 }
 
-                // Rozdziel URL na części i zwróć ostatni element (id produktu)
                 var urlParts = idElement.Split('/');
                 var productId = urlParts.Last();
 
-                // Zweryfikuj, czy id produktu nie jest puste
                 if (string.IsNullOrEmpty(productId))
                 {
                     Console.WriteLine("Product ID is empty.");
@@ -249,9 +225,27 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 Console.WriteLine($"An unexpected error occurred: {ex.Message}");
             }
 
-            // W przypadku jakiegokolwiek błędu zwracamy null
             return null;
         }
+
+        private void CheckIfElementVisible(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor javaScriptExecutor)
+        {
+            try
+            {
+                var element = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".gridless")));
+                Console.WriteLine("Element 'gridless' found and is visible.");
+            }
+            catch (WebDriverTimeoutException)
+            {
+                Console.WriteLine("Element 'gridless' was not found or visible within the timeout.");
+            }
+        }
+
+
+        //private IEnumerable<Product> NavigateToWariants(ChromeDriver driver)
+        //{
+        //    var clickableElement = driver.FindElements(By.CssSelector(""));
+        //}
 
     }
 }

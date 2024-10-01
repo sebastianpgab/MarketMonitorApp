@@ -137,26 +137,37 @@ namespace MarketMonitorApp.Services.ProductPatterns
             for (int i = 0; i < productElements.Count; i++)
             {
                 productElements = driver.FindElements(By.CssSelector(".with-image"));
+                string previousUrl = driver.Url;
 
                 var clickableElement = productElements[i].FindElement(By.CssSelector("div._picture"));
                 jsExecutor.ExecuteScript("arguments[0].click();", clickableElement);
-
                 var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
 
                 sideRightButton.Click();
 
-                var product = new Product
+
+                var checkWariant = CheckIfElementVisible(wait);
+
+                if (checkWariant)
                 {
-                    IdProduct = ExtractIdProduct(driver),
-                    Name = ExtractProductName(driver),
-                    Price = ExtractProductPrice(driver)
-                };
-                products.Add(product);
 
-                driver.Navigate().Back();
-                wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
+                    var prodactsFromWariatns = NavigateToWariants(driver, wait, jsExecutor, previousUrl);
+                    products.AddRange(prodactsFromWariatns);
+                }
+                else
+                {
+                    var product = new Product
+                    {
+                        IdProduct = ExtractIdProduct(driver),
+                        Name = ExtractProductName(driver),
+                        Price = ExtractProductPrice(driver)
+                    };
+                    products.Add(product);
+
+                    driver.Navigate().Back();
+                    wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
+                }
             }
-
             return products;
         }
 
@@ -228,24 +239,51 @@ namespace MarketMonitorApp.Services.ProductPatterns
             return null;
         }
 
-        private void CheckIfElementVisible(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor javaScriptExecutor)
+        private bool CheckIfElementVisible(WebDriverWait wait)
         {
             try
             {
                 var element = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".gridless")));
                 Console.WriteLine("Element 'gridless' found and is visible.");
+                return true;
             }
             catch (WebDriverTimeoutException)
             {
                 Console.WriteLine("Element 'gridless' was not found or visible within the timeout.");
+                return false;
             }
         }
 
 
-        //private IEnumerable<Product> NavigateToWariants(ChromeDriver driver)
-        //{
-        //    var clickableElement = driver.FindElements(By.CssSelector(""));
-        //}
+        private IEnumerable<Product> NavigateToWariants(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor javaScriptExecutor, string previousUrl)
+        {
+            List<Product> products = new List<Product>();
+            // var elements = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".js-mount li a")));
+            var clickableElement = driver.FindElements(By.CssSelector(".js-mount li a"));
+            var elements = driver.FindElements(By.CssSelector("li a"));
+
+            for (int i = 0; i < clickableElement.Count; i++) 
+            {
+              javaScriptExecutor.ExecuteScript("arguments[0].click();", clickableElement[i]);
+                var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
+
+                sideRightButton.Click();
+                for (int j = clickableElement.Count; j < elements.Count; j++)
+                {
+                    var product = new Product
+                    {
+                        IdProduct = ExtractIdProduct(driver),
+                        Name = ExtractProductName(driver),
+                        Price = ExtractProductPrice(driver)
+                    };
+                    products.Add(product);
+                }
+            }
+            driver.Navigate().GoToUrl(previousUrl);
+            wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
+
+            return products;
+        }
 
     }
 }

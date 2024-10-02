@@ -254,36 +254,55 @@ namespace MarketMonitorApp.Services.ProductPatterns
             }
         }
 
-
         private IEnumerable<Product> NavigateToWariants(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor javaScriptExecutor, string previousUrl)
         {
             List<Product> products = new List<Product>();
-            // var elements = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".js-mount li a")));
             var clickableElement = driver.FindElements(By.CssSelector(".js-mount li a"));
             var elements = driver.FindElements(By.CssSelector("li a"));
 
-            for (int i = 0; i < clickableElement.Count; i++) 
+            for (int i = 0; i < clickableElement.Count; i++)
             {
-              javaScriptExecutor.ExecuteScript("arguments[0].click();", clickableElement[i]);
-                var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
-
-                sideRightButton.Click();
-                for (int j = clickableElement.Count; j < elements.Count; j++)
+                try
                 {
-                    var product = new Product
+                    var acceptNewsletterButton = driver.FindElement(By.CssSelector("button.swo-css-1eqza22"));
+                    acceptNewsletterButton.Click();
+                }
+                catch (ElementNotInteractableException)
+                {
+                }
+                catch (NoSuchWindowException)
+                {
+                }
+
+                try
+                {
+                    javaScriptExecutor.ExecuteScript("arguments[0].click();", clickableElement[i]);
+
+                    var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
+                    sideRightButton.Click();
+
+                    for (int j = clickableElement.Count; j < elements.Count; j++)
                     {
-                        IdProduct = ExtractIdProduct(driver),
-                        Name = ExtractProductName(driver),
-                        Price = ExtractProductPrice(driver)
-                    };
-                    products.Add(product);
+                        var product = new Product
+                        {
+                            IdProduct = ExtractIdProduct(driver) + " " + clickableElement[i].Text + " " + elements[j].Text,
+                            Name = ExtractProductName(driver) + " " + clickableElement[i].Text +" " +  elements[j].Text,
+                            Price = ExtractProductPrice(driver)
+                        };
+                        products.Add(product);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
             driver.Navigate().GoToUrl(previousUrl);
             wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
-
             return products;
         }
+
+
 
     }
 }

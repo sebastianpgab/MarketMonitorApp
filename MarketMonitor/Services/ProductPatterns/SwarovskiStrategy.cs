@@ -85,7 +85,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             for (int i = 0; i < findCategoryElements(driver).Count; i++)
             {
-                var categoryElements = findCategoryElements(driver); 
+                var categoryElements = findCategoryElements(driver);
                 var categoryElement = categoryElements[i];
 
                 try
@@ -117,7 +117,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 }
                 catch (StaleElementReferenceException)
                 {
-                    i--; 
+                    i--;
                 }
                 catch (NoSuchElementException)
                 {
@@ -150,7 +150,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 if (checkWariant)
                 {
-
+                    Thread.Sleep(2000);
                     var prodactsFromWariatns = NavigateToWariants(driver, wait, jsExecutor, previousUrl);
                     products.AddRange(prodactsFromWariatns);
                 }
@@ -257,8 +257,10 @@ namespace MarketMonitorApp.Services.ProductPatterns
         private IEnumerable<Product> NavigateToWariants(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor javaScriptExecutor, string previousUrl)
         {
             List<Product> products = new List<Product>();
+            var elements = driver.FindElements(By.CssSelector(".js-reticle ul li"));
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(".js-mount li a")));
+
             var clickableElement = driver.FindElements(By.CssSelector(".js-mount li a"));
-            var elements = driver.FindElements(By.CssSelector("li a"));
 
             for (int i = 0; i < clickableElement.Count; i++)
             {
@@ -266,6 +268,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 {
                     var acceptNewsletterButton = driver.FindElement(By.CssSelector("button.swo-css-1eqza22"));
                     acceptNewsletterButton.Click();
+                    Thread.Sleep(2000);
+
                 }
                 catch (ElementNotInteractableException)
                 {
@@ -276,21 +280,27 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 try
                 {
+
                     javaScriptExecutor.ExecuteScript("arguments[0].click();", clickableElement[i]);
+
+                    Thread.Sleep(2000);
 
                     var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
                     sideRightButton.Click();
+                    Thread.Sleep(2000);
 
-                    for (int j = clickableElement.Count; j < elements.Count; j++)
+                    for (int j = 0; j < elements.Count; j++)
                     {
                         var product = new Product
                         {
                             IdProduct = ExtractIdProduct(driver) + " " + clickableElement[i].Text + " " + elements[j].Text,
-                            Name = ExtractProductName(driver) + " " + clickableElement[i].Text +" " +  elements[j].Text,
+                            Name = ExtractProductName(driver) + " " + clickableElement[i].Text + " " + elements[j].Text,
                             Price = ExtractProductPrice(driver)
                         };
                         products.Add(product);
                     }
+                    Thread.Sleep(2000);
+
                 }
                 catch (Exception ex)
                 {
@@ -301,8 +311,5 @@ namespace MarketMonitorApp.Services.ProductPatterns
             wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
             return products;
         }
-
-
-
     }
 }

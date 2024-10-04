@@ -146,27 +146,19 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 sideRightButton.Click();
 
 
-                var checkWariant = CheckIfElementVisible(wait);
+               //var checkWariant = CheckIfElementVisible(wait);
 
-                if (checkWariant)
+                var product = new Product
                 {
-                    Thread.Sleep(2000);
-                    var prodactsFromWariatns = NavigateToWariants(driver, wait, jsExecutor, previousUrl);
-                    products.AddRange(prodactsFromWariatns);
-                }
-                else
-                {
-                    var product = new Product
-                    {
-                        IdProduct = ExtractIdProduct(driver),
-                        Name = ExtractProductName(driver),
-                        Price = ExtractProductPrice(driver)
-                    };
-                    products.Add(product);
+                    IdProduct = ExtractIdProduct(driver),
+                    Name = ExtractProductName(driver),
+                    Price = ExtractProductPrice(driver)
+                };
+                products.Add(product);
 
-                    driver.Navigate().Back();
-                    wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
-                }
+                driver.Navigate().Back();
+                wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
+                
             }
             return products;
         }
@@ -254,62 +246,5 @@ namespace MarketMonitorApp.Services.ProductPatterns
             }
         }
 
-        private IEnumerable<Product> NavigateToWariants(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor javaScriptExecutor, string previousUrl)
-        {
-            List<Product> products = new List<Product>();
-            var elements = driver.FindElements(By.CssSelector(".js-reticle ul li"));
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(".js-mount li a")));
-
-            var clickableElement = driver.FindElements(By.CssSelector(".js-mount li a"));
-
-            for (int i = 0; i < clickableElement.Count; i++)
-            {
-                try
-                {
-                    var acceptNewsletterButton = driver.FindElement(By.CssSelector("button.swo-css-1eqza22"));
-                    acceptNewsletterButton.Click();
-                    Thread.Sleep(2000);
-
-                }
-                catch (ElementNotInteractableException)
-                {
-                }
-                catch (NoSuchWindowException)
-                {
-                }
-
-                try
-                {
-
-                    javaScriptExecutor.ExecuteScript("arguments[0].click();", clickableElement[i]);
-
-                    Thread.Sleep(2000);
-
-                    var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
-                    sideRightButton.Click();
-                    Thread.Sleep(2000);
-
-                    for (int j = 0; j < elements.Count; j++)
-                    {
-                        var product = new Product
-                        {
-                            IdProduct = ExtractIdProduct(driver) + " " + clickableElement[i].Text + " " + elements[j].Text,
-                            Name = ExtractProductName(driver) + " " + clickableElement[i].Text + " " + elements[j].Text,
-                            Price = ExtractProductPrice(driver)
-                        };
-                        products.Add(product);
-                    }
-                    Thread.Sleep(2000);
-
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}");
-                }
-            }
-            driver.Navigate().GoToUrl(previousUrl);
-            wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
-            return products;
-        }
     }
 }

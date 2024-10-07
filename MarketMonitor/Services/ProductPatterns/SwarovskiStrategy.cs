@@ -196,16 +196,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
         {
             try
             {
-                var idElement = driver.FindElement(By.CssSelector("li.active a.no-decoration")).GetAttribute("href");
+                string idElement = driver.FindElements(By.CssSelector("li.active a.no-decoration"))
+                                        .FirstOrDefault()?.GetAttribute("href")
+                                ?? driver.ExecuteScript("return document.querySelector('ul.u-flex li').baseURI;").ToString();
 
                 if (string.IsNullOrEmpty(idElement))
                 {
-                    Console.WriteLine("Href attribute is empty or null.");
+                    Console.WriteLine("Href attribute or baseURI is empty or null.");
                     return null;
                 }
 
-                var urlParts = idElement.Split('/');
-                var productId = urlParts.Last();
+                var productId = idElement.Split('/').LastOrDefault();
 
                 if (string.IsNullOrEmpty(productId))
                 {
@@ -215,21 +216,13 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 return productId;
             }
-            catch (NoSuchElementException ex)
-            {
-                Console.WriteLine($"Element not found: {ex.Message}");
-            }
-            catch (NullReferenceException ex)
-            {
-                Console.WriteLine($"Null reference encountered: {ex.Message}");
-            }
             catch (Exception ex)
             {
                 Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                return null;
             }
-
-            return null;
         }
+
 
         private bool CheckIfElementVisible(WebDriverWait wait)
         {

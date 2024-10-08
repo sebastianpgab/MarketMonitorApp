@@ -145,7 +145,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 sideRightButton.Click();
 
-
                //var checkWariant = CheckIfElementVisible(wait);
 
                 var product = new Product
@@ -194,33 +193,40 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         private string ExtractIdProduct(ChromeDriver driver)
         {
-            try
-            {
-                string idElement = driver.FindElements(By.CssSelector("li.active a.no-decoration"))
-                                        .FirstOrDefault()?.GetAttribute("href")
-                                ?? driver.ExecuteScript("return document.querySelector('ul.u-flex li').baseURI;").ToString();
+               string productId = null;
 
+               string idElement = driver.FindElements(By.CssSelector("li.active a.no-decoration"))
+                                        .FirstOrDefault()?.GetAttribute("href");
+                 
+                
                 if (string.IsNullOrEmpty(idElement))
                 {
-                    Console.WriteLine("Href attribute or baseURI is empty or null.");
-                    return null;
-                }
-
-                var productId = idElement.Split('/').LastOrDefault();
-
-                if (string.IsNullOrEmpty(productId))
+                try
                 {
-                    Console.WriteLine("Product ID is empty.");
-                    return null;
+                    idElement = driver.ExecuteScript("return document.querySelector('ul.u-flex li').baseURI;").ToString();
                 }
 
-                return productId;
+                catch (JavaScriptException) 
+                {
+                    idElement = driver.ExecuteScript("return document.querySelector('.u-flex').baseURI;").ToString();
+
+                }
+                finally
+                {
+                    if (string.IsNullOrEmpty(idElement))
+                    {
+                        Console.WriteLine("Href attribute or baseURI is empty or null.");
+                    }
+
+                     productId = idElement.Split('/').LastOrDefault();
+
+                    if (string.IsNullOrEmpty(productId))
+                    {
+                        Console.WriteLine("Product ID is empty.");
+                    }
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An unexpected error occurred: {ex.Message}");
-                return null;
-            }
+            return productId;
         }
 
 

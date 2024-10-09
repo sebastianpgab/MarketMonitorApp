@@ -44,13 +44,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         public void ClickSideRightButton(ChromeDriver driver, WebDriverWait wait, IJavaScriptExecutor jsExecutor)
         {
-            // Poczekaj aż przycisk będzie widoczny i klikalny
             var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
-
-            // Kliknij przycisk za pomocą JavaScript (jeśli zwykły Click() nie działa)
             jsExecutor.ExecuteScript("arguments[0].click();", sideRightButton);
-
-            // Możesz również kliknąć w standardowy sposób:
         }
 
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
@@ -65,7 +60,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 driver.Navigate().GoToUrl(baseUrl);
                 AcceptNewsletter(wait, driver, jsExecutor);
 
-                // Przejdź przez zagnieżdżone kategorie i serie
                 products.AddRange(NavigateToSeriesOrProducts(driver, wait, jsExecutor));
 
                 driver.Quit();
@@ -124,7 +118,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     Console.WriteLine("No clickable element was found.");
                 }
             }
-
             return products;
         }
 
@@ -145,8 +138,6 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 sideRightButton.Click();
 
-               //var checkWariant = CheckIfElementVisible(wait);
-
                 var product = new Product
                 {
                     IdProduct = ExtractIdProduct(driver),
@@ -157,7 +148,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
                 driver.Navigate().Back();
                 wait.Until(ExpectedConditions.ElementExists(By.CssSelector(".with-image")));
-                
+
             }
             return products;
         }
@@ -193,55 +184,39 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
         private string ExtractIdProduct(ChromeDriver driver)
         {
-               string productId = null;
+            string idElement = driver.FindElements(By.CssSelector("li.active a.no-decoration"))
+                                     .FirstOrDefault()?.GetAttribute("href");
 
-               string idElement = driver.FindElements(By.CssSelector("li.active a.no-decoration"))
-                                        .FirstOrDefault()?.GetAttribute("href");
-                 
-                
-                if (string.IsNullOrEmpty(idElement))
-                {
-                try
-                {
-                    idElement = driver.ExecuteScript("return document.querySelector('ul.u-flex li').baseURI;").ToString();
-                }
-
-                catch (JavaScriptException) 
-                {
-                    idElement = driver.ExecuteScript("return document.querySelector('.u-flex').baseURI;").ToString();
-
-                }
-                finally
-                {
-                    if (string.IsNullOrEmpty(idElement))
-                    {
-                        Console.WriteLine("Href attribute or baseURI is empty or null.");
-                    }
-
-                     productId = idElement.Split('/').LastOrDefault();
-
-                    if (string.IsNullOrEmpty(productId))
-                    {
-                        Console.WriteLine("Product ID is empty.");
-                    }
-                }
+            if (string.IsNullOrEmpty(idElement))
+            {
+                idElement = TryGetBaseUri(driver, "ul.u-flex li") ?? TryGetBaseUri(driver, ".u-flex");
             }
+
+            if (string.IsNullOrEmpty(idElement))
+            {
+                Console.WriteLine("Href attribute or baseURI is empty or null.");
+            }
+
+            string productId = idElement.Split('/').LastOrDefault();
+
+            if (string.IsNullOrEmpty(productId))
+            {
+                Console.WriteLine("Product ID is empty.");
+                throw new NullReferenceException();
+            }
+
             return productId;
         }
 
-
-        private bool CheckIfElementVisible(WebDriverWait wait)
+        private string TryGetBaseUri(ChromeDriver driver, string querySelector)
         {
             try
             {
-                var element = wait.Until(ExpectedConditions.ElementIsVisible(By.CssSelector(".gridless")));
-                Console.WriteLine("Element 'gridless' found and is visible.");
-                return true;
+                return driver.ExecuteScript($"return document.querySelector('{querySelector}').baseURI;")?.ToString();
             }
-            catch (WebDriverTimeoutException)
+            catch (JavaScriptException)
             {
-                Console.WriteLine("Element 'gridless' was not found or visible within the timeout.");
-                return false;
+                return null;
             }
         }
 

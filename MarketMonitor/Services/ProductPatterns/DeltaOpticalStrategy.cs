@@ -52,15 +52,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     {
                         var productId = productElement.GetAttribute("data-product-id");
                         var productName = productElement.FindElement(By.CssSelector("h2.product-name > a")).GetAttribute("title").Trim();
-                        var priceElement = productElement.FindElement(By.CssSelector(".price"));
-
-                        string price = priceElement?.Text?.Trim() ?? "0";
-
-                        if (string.IsNullOrEmpty(price) || price == "0")
-                        {
-                            var discountPriceElement = productElement.FindElement(By.CssSelector(".discount-price"));
-                            price = discountPriceElement?.Text?.Trim() ?? "0";
-                        }
+                        var price = ExtractProductPrice(productElement);
 
                         var product = new Product
                         {
@@ -85,6 +77,17 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 }
             }
             return productsList;
+        }
+
+        private string ExtractProductPrice(IWebElement productElement)
+        {
+            var priceElement = productElement.FindElement(By.CssSelector(".price-container"));
+
+            string price = priceElement?.Text?.Trim() ?? "0";
+
+            price = price.Substring(0, price.IndexOf('ł') + 1);
+
+            return price;
         }
 
         private void AkcceptCookieFiles(WebDriverWait wait, ChromeDriver driver, IJavaScriptExecutor jsExecutor)

@@ -95,13 +95,12 @@ namespace MarketMonitorApp.Services.ProductPatterns
             try
             {
                 var acceptCookiesButton = wait.Until(driver => driver.FindElement(By.CssSelector(".btn.btn-primary[data-type='accept-cookies-button']")));
-                IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
                 jsExecutor.ExecuteScript("arguments[0].click();", acceptCookiesButton);
                 Console.WriteLine("Cookie files was accepted");
             }
             catch (NoSuchElementException)
             {
-                Console.WriteLine("There was not baner with cookie files");
+                Console.WriteLine("There was not a banner with cookie files");
             }
         }
 

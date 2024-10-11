@@ -17,14 +17,14 @@ namespace MarketMonitorApp.Services.ProductPatterns
         public IEnumerable<Product> GetProducts(string baseUrl, int currentPage)
         {
             var pageUrl = $"{baseUrl}";
-            if(currentPage != 1)
+            if (currentPage != 1)
             {
-              pageUrl = $"{baseUrl}{currentPage}";
+                pageUrl = $"{baseUrl}{currentPage}";
             }
             var document = _htmlWeb.Load(pageUrl);
 
             var products = new List<Product>();
-            var productNodes = document.DocumentNode.QuerySelectorAll(".product");
+            var productNodes = document.DocumentNode.QuerySelectorAll(".product-list .product");
 
             foreach (var productNode in productNodes)
             {
@@ -45,7 +45,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     products.Add(newProduct);
                 }
             }
-          return products;
+            return products;
         }
 
         public int GetLastPageNumber(IHtmlWebAdapter web, string baseUrl)

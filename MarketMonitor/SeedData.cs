@@ -264,6 +264,11 @@ public class SeedData
                             Name ="Beretta",
                             LinkToCategory = "https://kaliber.pl/5_beretta?p="
                         },
+                        new Category
+                        {
+                            Name = "Burris",
+                            LinkToCategory = "https://kaliber.pl/13_burris?p="
+                        }
 
                     },
                 },

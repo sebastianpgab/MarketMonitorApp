@@ -407,6 +407,11 @@ public class SeedData
                             Name ="Hikmicro",
                             LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/hikmicro/"
                         },
+                        new Category
+                        {
+                            Name ="ThermTec",
+                            LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/ThermTec/"
+                        },
                     }
                 },
                  new Distributor

@@ -367,7 +367,7 @@ public class SeedData
                     {
                         new Category
                         {
-                            Name ="Hikmikro (old)",
+                            Name ="Hikmikro",
                             LinkToCategory = "https://kolba.pl/pl/search?page=1&sort=default&query=hikmicro"
                         },
                         new Category
@@ -404,11 +404,6 @@ public class SeedData
                         },
                         new Category
                         {
-                            Name ="Hikmicro",
-                            LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/hikmicro/"
-                        },
-                        new Category
-                        {
                             Name ="ThermTec",
                             LinkToCategory = "https://taniepolowanie.pl/pl/searchquery/ThermTec/"
                         },
@@ -431,7 +426,7 @@ public class SeedData
                         },
                         new Category
                         {
-                            Name ="X-Hog",
+                            Name ="X-Hogx",
                             LinkToCategory = "https://tamed.pl/index.php?fc=module&module=leoproductsearch&controller=productsearch&leoproductsearch_static_token=66cc3dc6468290af5fe3ebc958502f6b&cate=&search_query=x-hog+iluminator&page="
                         },
                     }

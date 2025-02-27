@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Collections.ObjectModel;
 using MarketMonitorApp.Helpers;
+using SeleniumExtras.WaitHelpers;
 
 namespace MarketMonitorApp.Services.ProductPatterns
 {
@@ -31,7 +32,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             service.SuppressInitialDiagnosticInformation = true;
             service.HideCommandPromptWindow = true;
-            options.AddArguments("headless");
+           // options.AddArguments("headless");
 
             using (var driver = new ChromeDriver(service, options))
             {
@@ -45,6 +46,7 @@ namespace MarketMonitorApp.Services.ProductPatterns
                     // Akceptacja plików cookie za pomocą JavaScript
                     AkcceptCookieFiles(wait, driver, jsExecutor);
 
+                    
                     // Symulacja przewijania strony
                     var products = SimulateScroll(wait, driver, jsExecutor);
 
@@ -114,7 +116,8 @@ namespace MarketMonitorApp.Services.ProductPatterns
 
             while (scrollAttempts < maxScrollAttempts)
             {
-                products = driver.FindElements(By.CssSelector(".product-box"));
+                products = wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.CssSelector(".product-box")));
+
                 newNumberOfItems = products.Count;
 
                 if (newNumberOfItems == numberOfItems)

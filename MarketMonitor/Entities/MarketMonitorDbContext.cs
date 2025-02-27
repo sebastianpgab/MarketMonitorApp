@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace MarketMonitorApp.Entities
 {
-    public class MarketMonitorDbContext : DbContext 
+    public class MarketMonitorDbContext : DbContext
     {
-        private string _connectionString = "Server=SEBASTIANPGAB\\SQLEXPRESS; Database=MarketMonitorDataBase; Trusted_Connection=True";
+        private string _connectionString = "Server=TB-PC17\\SQLEXPRESS; Database=Market; User ID=sa; Password=Twojabron123!";
         public DbSet<Actualization> Actualizations { get; set; }
         public DbSet<Distributor> Distributors { get; set; }
         public DbSet<Product> Products { get; set; }

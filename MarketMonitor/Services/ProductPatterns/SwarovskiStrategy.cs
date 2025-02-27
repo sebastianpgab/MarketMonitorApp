@@ -85,9 +85,9 @@ namespace MarketMonitorApp.Services.ProductPatterns
                 try
                 {
                     wait.Timeout = TimeSpan.FromSeconds(10);
-                    var acceptNewsletterButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.swo-css-1eqza22")));
+                    //var acceptNewsletterButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.swo-css-1eqza22")));
 
-                    jsExecutor.ExecuteScript("arguments[0].click();", acceptNewsletterButton);
+                    //jsExecutor.ExecuteScript("arguments[0].click();", acceptNewsletterButton);
 
                     var sideRightButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector("button.side-right")));
 

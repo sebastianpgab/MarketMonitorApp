@@ -37,7 +37,7 @@ public class DistributorDetailsModel : PageModel
     {
         Distributor = _distributorDetailsService.GetDistributorByName(DistributorName);
         Categories = Distributor.Categories.ToList();
-        InputText = @"C:\Users\damia\Desktop\xx";
+        InputText = @"C:\Users\SPiatkowski\Desktop\pliki";
     }
 
     public void OnPost()

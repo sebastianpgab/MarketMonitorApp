@@ -91,7 +91,7 @@ public class SeedData
                         },
                         new Category
                         {
-                            Name ="Sauer",
+                            Name ="Sauerhut",
                             LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/sauer"
                         },
                         new Category
@@ -423,6 +423,11 @@ public class SeedData
                         {
                             Name ="Infiray",
                             LinkToCategory = "https://tamed.pl/index.php?fc=module&module=leoproductsearch&controller=productsearch&leoproductsearch_static_token=66cc3dc6468290af5fe3ebc958502f6b&search_query=infiray&page="
+                        },
+                        new Category
+                        {
+                            Name ="Nocpix",
+                            LinkToCategory = "https://tamed.pl/index.php?fc=module&module=leoproductsearch&controller=productsearch&leoproductsearch_static_token=66cc3dc6468290af5fe3ebc958502f6b&search_query=nocpix&page="
                         },
                         new Category
                         {

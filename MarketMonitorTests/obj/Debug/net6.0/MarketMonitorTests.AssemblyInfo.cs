@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MarketMonitorTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+426307706085f34b725b29952a98e007b0a1fa42")]
 [assembly: System.Reflection.AssemblyProductAttribute("MarketMonitorTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MarketMonitorTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

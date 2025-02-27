@@ -91,7 +91,7 @@ public class SeedData
                         },
                         new Category
                         {
-                            Name ="Sauerhut",
+                            Name ="Sauer",
                             LinkToCategory = "https://sklep.szuster.com.pl/manufacturer/sauer"
                         },
                         new Category
